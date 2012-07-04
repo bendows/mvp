@@ -1,0 +1,12 @@
+php_value error_reporting 7
+php_flag display_errors On
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{REQUEST_URI} !^/admin\/.+$
+RewriteCond %{REQUEST_URI} !^/css\/.+$
+RewriteCond %{REQUEST_URI} !^/js\/.+$
+RewriteCond %{REQUEST_URI} !^/img\/.+$
+RewriteCond %{REQUEST_URI} !^/index\.php$
+RewriteRule    (.*).(.*) /index.php
+RewriteRule    ^$ /index.php    [L]
+</IfModule>
