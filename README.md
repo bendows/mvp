@@ -1,0 +1,4 @@
+docroot
+=======
+
+Skeleton website
