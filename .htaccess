@@ -10,3 +10,4 @@ RewriteCond %{REQUEST_URI} !^/index\.php$
 RewriteRule    (.*).(.*) /index.php
 RewriteRule    ^$ /index.php    [L]
 </IfModule>
+SetEnv TZ Africa/Johannesburg
