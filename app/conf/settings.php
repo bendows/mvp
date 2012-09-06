@@ -3,8 +3,8 @@
 //like this: settings::get('keyname')
 //ie. echo settings::get('mysqlconf') //echo's "app/conf/sitedb.php"
 $siteconf=array(
-    "maintenance"=>"/maintain.html", //Hash out this line to put the site in live mode
-    "logfile"=>"html/messages.log",  //Hash out this line to disable logging throughout the site
+    //"maintenance"=>"/maintain.html", //Hash out this line to put the site in live mode
+    "logfile"=>"messages.log",  //Hash out this line to disable logging throughout the site
     "mysqlconf"=>"app/conf/sitedb.php",
     "requestcomponent"=>array('request'=> array('POST', 'GET', 'COOKIE', 'FILES', 'SERVER')),
     "sessioninfo"=>array(

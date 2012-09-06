@@ -1,1 +1,3 @@
 app/conf/settings.php
+php_error.log
+messages.log
