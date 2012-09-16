@@ -2,7 +2,7 @@
 
 class lib_page_render extends lib_page_page {
 
-    var $layout = "default_layout";
+    var $layout = "1col_layout";
     var $viewfile = false;
     var $viewclass = false;
     var $viewvars = array();
@@ -15,7 +15,8 @@ class lib_page_render extends lib_page_page {
     }
 
     function beforerender() {
-        
+			if (! $this->viewfile)
+				$this->viewfile = "404";
     }
 
     function render($layout = null, $file = null) {

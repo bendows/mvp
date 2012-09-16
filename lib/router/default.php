@@ -7,18 +7,11 @@ class lib_router_default {
         $this->url = preg_replace("/\/+/", "/", $this->url);
 				if (empty($this->url))
 					$this->url = "index.hml";
-				if (preg_match("/^\/$/",$this->url))
-					$this->url = "index.hml";
     }
 
     public function getpagename () {
 			$apage = false;
       switch (true) {
-        case preg_match ("%^index.php$%", $this->url):
-        case preg_match ("%^index.html$%", $this->url):
-        case preg_match ("%^index$%", $this->url):
-          $apage = "app_page_index";
-          break;
         case preg_match ("%^maintain.html$%", $this->url):
           $apage = "app_page_maintain";
           break;
