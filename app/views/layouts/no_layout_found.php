@@ -8,7 +8,6 @@
 	<meta name="keywords" content="The Full Page 1 column Liquid Layout. Em padding widths. Cross-Browser. Equal Height Columns." />
 	<meta name="robots" content="index, follow" />
   <link rel='stylesheet' type='text/css' href='/css/1col.css' media='screen'/>
-  <?=$headers;?>
 </head>
 <body>
 <div id="header">
@@ -17,7 +16,15 @@
 <div class="colmask fullpage">
     <div class="col1">
      <!-- Column 1 start -->
-		<?=$content;?>
+     <h2>Layout not found</h2>
+		 <p>Displaying app/views/layouts/no_layout_found.php in stead of <span style='color:red;'><?=$this->layout;?></span>.</p>
+		<p>Layout <span style='color:red;'><?=$this->layout;?></span> not be found or is not a file.</p>
+		<p>Create the layout <span style='color:red;'><?=$this->layout;?></span> as follows:</p>
+		<p>To start with a 1 column layout, copy the file app/views/layouts/1col_layout.php as <span style='color:red;'>app/views/layouts/<?=$this->layout;?>.php</span></p>
+<p>Or</p>
+		<p>To start with a 3 column layout, copy the file app/views/layouts/3col_layout.php as <span style='color:red;'>app/views/layouts/<?=$this->layout;?>.php</span></p>
+		<?=$this->element('debug');?>
+			<?=$content;?>
      <!-- Column 1 end -->
     </div>
 </div>

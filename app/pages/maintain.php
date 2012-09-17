@@ -1,7 +1,12 @@
 <?
-class app_page_maintain extends lib_page_render {
+class app_page_maintain extends app_page_render {
+	var $viewfile = "maintain";
+  var $layout = "1col_layout";
+  var $title = "This site is currently in maintenance mode";
+	var $components = array("request");
 
-	var $viewfile = "maintain_view";
-
+	function beforerender() {
+		$this->viewvars['onlinetime'] = settings::get('onlinetime');
+	}
 }
 ?>

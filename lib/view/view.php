@@ -50,20 +50,21 @@ class lib_view {
         return $msg;
     }
 
-    function render($layout = null, $file = null) {
+    function render($layout = null, $viewfile = null) {
         $out = null;
-        $viewoutput = $this->_render("app/views/$file", $this->viewvars);
-        $pageoutput = $this->renderlayout("app/views/layouts/$layout", $viewoutput);
+        $viewoutput = $this->_render("app/views/$viewfile", $this->viewvars);
+        $pageoutput = $this->_renderlayout("app/views/layouts/$layout", $viewoutput);
         $this->hasrendered = true;
         return $pageoutput;
     }
 
-    function renderlayout($layoutfilename = null, $content) {
+    function _renderlayout($layoutfilename = null, $content) {
         $data = array_merge(
-            $this->viewvars, array(
-                'content' => $content,
-                'headers' => implode("\t\r\n", $this->scripts)
-            )
+					$this->viewvars, 
+					array(
+          	'content' => $content,
+          	'headers' => implode("\t\r\n", $this->scripts)
+          )
         );
         return $this->_render($layoutfilename, $data);
     }

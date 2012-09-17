@@ -23,27 +23,7 @@
 <a href="http://<?=$this->httphost;?>"><img src="/img/mvplogo.png" style='border:1px solid silver;'></a>
 </div>
 <div class="colmask holygrail">
-    <div class="colmid">
-        <div class="colleft">
-            <div class="col1wrap">
-                <div class="col1">
-							<!-- Column 1 start -->
-							<?=$content;?>
-    					<!-- Column 1 end -->
-                </div>
-            </div>
-            <div class="col2">
-				<!-- Column 2 start -->
-				<?=$this->element('left');?>
-        <!-- Column 2 end -->
-            </div>
-            <div class="col3">
-				<!-- Column 3 start -->
-				<?=$this->element('right');?>
-				<!-- Column 3 end -->
-            </div>
-        </div>
-    </div>
+<?=$content;?>
 </div>
 <div id="footer"><?=$this->element('footer');?></div>
 </body>

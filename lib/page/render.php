@@ -2,7 +2,6 @@
 
 class lib_page_render extends lib_page_page {
 
-    var $layout = "1col_layout";
     var $viewfile = false;
     var $viewclass = false;
     var $viewvars = array();
@@ -15,28 +14,21 @@ class lib_page_render extends lib_page_page {
     }
 
     function beforerender() {
-			if (! $this->viewfile)
-				$this->viewfile = "404";
     }
 
-    function render($layout = null, $file = null) {
+    function render($layout = null, $viewfile = null) {
         $this->beforerender();
-        if ($layout == null)
-            $layout = $this->layout;
-        if ($file == null)
-            $file = $this->viewfile;
+        if (! file_exists ("app/views/layouts/$layout.php"))
+            $layout = "no_layout_found";
+        if (! file_exists ("app/views/$viewfile.php"))
+            $viewfile = "no_view_found";
         $viewclass = "lib_view";
         if ($this->viewclass)
             $viewclass = "app_view_{$this->viewclass}";
         $view = & new $viewclass($this);
-				//Display page in browser
-        echo $view->render($layout, $file);
+				//Render the full HTML page in the browser
+        echo $view->render($layout, $viewfile);
     }
-
-		function initialize() {
-			if ($this->autorender)
-    		$this->render();
-		}
 
 }
 ?>

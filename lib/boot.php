@@ -10,14 +10,10 @@ require_once('lib/classloader.php');
 
 $maintenance = settings::get('maintenance');
 
-/*
 if ($maintenance)
     dispatcher::$_url = $maintenance;
 else
     dispatcher::$_url = $_SERVER['REQUEST_URI'];
-*/
-
-dispatcher::$_url = $_SERVER['REQUEST_URI'];
 
 if (dispatcher::$_url == "/")
 	dispatcher::$_url = "/index.html";
@@ -31,6 +27,10 @@ $apage = dispatcher::make_page();
 
 //Run the page :)
 $apage->initialize();
+
+if ($apage->autorender)
+	$apage->render($apage->layout, $apage->viewfile);
+
 
 $apage->shutdown();
 
