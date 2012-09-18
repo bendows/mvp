@@ -6,7 +6,6 @@ class lib_page_render extends lib_page_page {
     var $viewclass = false;
     var $viewvars = array();
     var $output = null;
-		var $autorender = true;
 
     function __construct() {
 			parent::__construct();
