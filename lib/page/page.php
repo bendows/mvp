@@ -15,7 +15,7 @@ class lib_page_page extends object {
 
     function __construct() {
         parent::__construct(array_keys($this->objects));
-		$this->pagename = get_class($this);
+        $this->pagename = get_class($this);
         l::ll("lib_page_page::Construct |".$this->pagename."|");
     }
 
