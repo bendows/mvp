@@ -4,8 +4,9 @@ class lib_page_page extends object {
 
     var $pagename = false;
     var $models = array();
-		var $components = array();
+    var $components = array();
     var $helpers = array();
+
     private $objects = array(
         'models' => array(),
         'components' => array(),
@@ -14,8 +15,8 @@ class lib_page_page extends object {
 
     function __construct() {
         parent::__construct(array_keys($this->objects));
-				$this->pagename = get_class($this);
-				l::ll("lib_page_page::Construct |".$this->pagename."|");
+		$this->pagename = get_class($this);
+        l::ll("lib_page_page::Construct |".$this->pagename."|");
     }
 
     function ismodel($amodelname) {
