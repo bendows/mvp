@@ -2,9 +2,12 @@
 
 class lib_component_request extends lib_component_component {
 
-    function __construct($data, &$apage) {
-        parent::__construct($data);
-        foreach ($this->request as $val) {
+    function initialize() {
+        $apage = $this->page;
+        $request = func_get_args();
+        $request = $request[0];
+        $request = $request[0];
+        foreach ($request as $val) {
             switch ($val) {
                 case "COOKIE":
                     $this->cookie = $_COOKIE;

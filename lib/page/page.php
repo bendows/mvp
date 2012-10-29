@@ -39,16 +39,17 @@ class lib_page_page extends object {
         return $this->objects['models'][$amodelname];
     }
 
-    function component($acomponentname = '', $acomponentsettings = array()) {
-        if (empty($acomponentname))
-            return;
-        if (!array_key_exists($acomponentname, $this->components))
-            return;
-        $classname = "lib_component_{$acomponentname}";
-        if ($this->objects['components'][$acomponentname] instanceof $classname)
-            return $this->objects['components'][$acomponentname];
-        $this->objects['components'][$acomponentname] = & new $classname($acomponentsettings, $this);
-        return $this->objects['components'][$acomponentname];
+    function component() {
+        $component_name = func_get_arg(0);
+        $classname = "lib_component_{$component_name}";
+        if (func_num_args()==1)
+            if ($this->objects['components'][$component_name] instanceof $classname)
+                return $this->objects['components'][$component_name];
+
+        $component_args = func_get_args(); 
+        array_shift($component_args);
+        $temp = $this->objects['components'][$component_name] = & new $classname($this, $component_args);
+        return $temp;
     }
 
     function shutdown() {
