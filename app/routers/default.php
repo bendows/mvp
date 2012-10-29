@@ -10,7 +10,7 @@
           			$apage = "app_page_index";
           			break;
 				default:
-				  	$apage = parent::getpagename();
+					$apage = parent::getpagename();
 					break;
 			}
 			return $apage;
