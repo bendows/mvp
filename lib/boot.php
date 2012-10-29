@@ -22,7 +22,7 @@ $arouter = dispatcher::make_router();
 
 dispatcher::$_pagename = $arouter->getpagename();
 
-//Create an instance of the pag
+//Create an instance of the page
 $apage = dispatcher::make_page();
 
 //Run the page :)
@@ -30,7 +30,6 @@ $apage->initialize();
 
 if ($apage->autorender)
 	$apage->render($apage->layout, $apage->viewfile);
-
 
 $apage->shutdown();
 

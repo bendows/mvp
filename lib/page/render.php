@@ -25,7 +25,7 @@ class lib_page_render extends lib_page_page {
         if ($this->viewclass)
             $viewclass = "app_view_{$this->viewclass}";
         $view = & new $viewclass($this);
-				//Render the full HTML page in the browser
+		//Render the full HTML page to the browser
         echo $view->render($layout, $viewfile);
     }
 
