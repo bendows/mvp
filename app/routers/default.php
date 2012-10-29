@@ -9,7 +9,7 @@
         		case preg_match ("%^index$%", $this->url):
           			$apage = "app_page_index";
           			break;
-				default:
+			default:
 					$apage = parent::getpagename();
 					break;
 			}
