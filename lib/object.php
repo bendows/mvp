@@ -32,7 +32,7 @@ class object {
             if (!in_array($model, $this->models))
                 $this->models[] = $model;
         // merge components for page
-        $this->components = $mergedvars['components'];
+        //$this->components = $mergedvars['components'];
         // merge helpers for page
 				if (isset($mergedvars['helpers']))
         foreach ($mergedvars['helpers'] as $helper => $dummy)

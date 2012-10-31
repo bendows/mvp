@@ -7,14 +7,14 @@ class lib_component_request extends lib_component_component {
         $request = func_get_args();
         $request = $request[0];
         $request = $request[0];
-        foreach ($request as $val) {
+        foreach ($request as $i=>$val) {
             switch ($val) {
                 case "COOKIE":
                     $this->cookie = $_COOKIE;
                     break;
                 case "SERVER":
                     $this->server = $_SERVER;
-                    $apage->here = $this->server['SCRIPT_URL'];
+                    $apage->here = $this->server['REQUEST_URI'];
                     $apage->remoteip = $this->remoteip();
                     $apage->referer = $this->referer();
                     $apage->httphost = $this->server['HTTP_HOST'];
