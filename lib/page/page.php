@@ -4,7 +4,6 @@ class lib_page_page extends object {
 
     var $pagename = false;
     var $models = array();
-    var $components = array();
     var $helpers = array();
 
     private $objects = array(
