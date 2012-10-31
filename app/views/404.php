@@ -20,7 +20,6 @@ $pagecontent = <<< EOF
 		var \$autorender = true;
 		var \$layout = "3col_layout";
 		var \$viewfile = "$url";
-		var \$components = array('request');
 	}
 
 ?>
