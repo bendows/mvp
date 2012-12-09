@@ -48,8 +48,11 @@ class lib_page_page extends object {
            return $this->objects['components'][$component_name];
 
         $component_args = func_get_args(); 
+
         array_shift($component_args);
+
         $temp = $this->objects['components'][$component_name] = & new $classname($this, $component_args);
+
         return $temp;
     }
 

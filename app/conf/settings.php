@@ -8,7 +8,6 @@ $siteconf=array(
     //"maintenance"=>"/maintain.html", //If this line is NOT hashed out, the site will be operating in maintenance mode
     "logfile"=>"messages.log",  //Hash out this line to disable logging throughout the site
     "mysqlconf"=>"app/conf/sitedb.php",
-    "requestcomponent"=>array('POST', 'GET', 'COOKIE', 'FILES', 'SERVER'),
     "sessioninfo"=>array(
         'session_name'=>'change_this_to_example_org',
         'cookie_lifetime'=>86400, //Max lifetime of a session between page clicks

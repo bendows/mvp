@@ -3,11 +3,11 @@
             <div class="col1wrap">
                 <div class="col1">
               <!-- Column 1 start -->
-							<h2> mvp successfully installed on <?=$this->httphost;?></h2>
+		<h2> mvp successfully installed on <?=$this->httphost;?></h2>
 <?=$this->element('debug');?>
 <p>
-				The left column and the right column are included inside the layout [<?=$this->layout;?>] as elements.
-				Here the same elements are included again, but inside the view[<?=$filename;?>]
+	The left column and the right column are included inside the layout [<?=$this->layout;?>] as elements.
+	Here the same elements are included again, but inside the view[<?=$filename;?>]
 </p>
 <?=$this->element('left');?>
 <?=$this->element('right');?>

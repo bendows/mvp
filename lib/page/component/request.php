@@ -3,11 +3,9 @@
 class lib_component_request extends lib_component_component {
 
     function initialize() {
+	parent::initialize(func_get_args());
         $apage = $this->page;
-        $request = func_get_args();
-        $request = $request[0];
-        $request = $request[0];
-        foreach ($request as $i=>$val) {
+        foreach ($this->args as $i=>$val) {
             switch ($val) {
                 case "COOKIE":
                     $this->cookie = $_COOKIE;
