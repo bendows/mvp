@@ -40,11 +40,12 @@ class lib_page_page extends object {
     }
 
     function component() {
+
         $component_name = func_get_arg(0);
         $classname = "lib_component_{$component_name}";
-        if (func_num_args()==1)
-            if ($this->objects['components'][$component_name] instanceof $classname)
-                return $this->objects['components'][$component_name];
+
+        if ($this->objects['components'][$component_name] instanceof $classname)
+           return $this->objects['components'][$component_name];
 
         $component_args = func_get_args(); 
         array_shift($component_args);
