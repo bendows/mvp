@@ -44,6 +44,7 @@ class lib_page_page extends object {
         $component_name = func_get_arg(0);
         $classname = "lib_component_{$component_name}";
 
+	if (array_key_exists ($component_name, $this->objects['components']))
         if ($this->objects['components'][$component_name] instanceof $classname)
            return $this->objects['components'][$component_name];
 
