@@ -8,3 +8,4 @@ THe Model View Page Framework Installation Instructions
 cd /home/documentroot && git clone https://github.com/insecureben/mvp.git .
 cd /home/documentroot && install -o apache /dev/null php_error.log
 cd /home/documentroot && install -o apache /dev/null messages.log 
+cd /home/documentroot && chown apache html html/captcha

@@ -8,8 +8,8 @@ class lib_page_render extends lib_page_page {
     var $output = null;
 
     function __construct() {
-			parent::__construct();
-			l::ll("lib_page_render::Construct |".$this->pagename."|");
+	parent::__construct();
+	l::ll("lib_page_render::Construct |".$this->pagename."|");
     }
 
     function beforerender() {

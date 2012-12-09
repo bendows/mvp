@@ -5,6 +5,7 @@ class lib_page_page extends object {
     var $pagename = false;
     var $models = array();
     var $helpers = array();
+    var $autorender = false;
 
     private $objects = array(
         'models' => array(),
