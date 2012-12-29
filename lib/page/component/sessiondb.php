@@ -41,7 +41,7 @@ class lib_component_sessiondb extends lib_component_component {
 								array(&$this, 'write'), 
 								array(&$this, 'destroy'), 
 								array(&$this, 'gc'))) {
-      		die("Error session_set_save_handler");
+      	die("Error session_set_save_handler");
         				}
         $tt = $_SERVER['HTTP_USER_AGENT'];
         $tt.= ' ASSrtASdfGtewr53 ';
@@ -67,18 +67,15 @@ class lib_component_sessiondb extends lib_component_component {
     }
 
     function read($id) {
-      //if ((string) $tt !== (string) $_SESSION['userag'])
-			//	return '';
 	$delta = time()-$this->gc_maxlifetime;
       $k = $this->model->delete($this->table_name, "(http_host = '%s') and (updated < %d)", array($_SERVER['HTTP_HOST'], $delta));
-      $sql = "select data from {$this->table_name} where (sessid = '%s')";
-      if (false === ($ar = $this->model->row($sql, array($id))))
+      if (false === ($row = $this->model->row("select data from {$this->table_name} where (sessid = '%s')", array($id))))
 		return '';
 
-	if (empty($ar))
+	if (empty($row))
 		return '';
 
-        return $ar['data'];
+        return $row['data'];
     }
 
     function write($id, $data) {
@@ -109,13 +106,13 @@ class lib_component_sessiondb extends lib_component_component {
 
     function destroy($id) {
        $k = $this->model->delete($this->table_name, "sessid = '%s'", array($id));
-	 if ((int) $k > 0)
+	if ((int) $k > 0)
 	return true;
         return false;
     }
 
     function gc($maxlifetime) {
- 	return true;
+	return true;
     }
 }
 ?>
