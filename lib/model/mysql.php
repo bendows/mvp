@@ -62,6 +62,7 @@ class lib_model_mysql {
 
     final private function executesql($sql) {
         $this->msg = $sql;
+	l::ll("mysql::executesql [{$sql}]");
         $this->emsg = "";
         if (!@mysql_query($sql, $this->con)) {
             $this->emsg = "[".@mysql_errno($this->con)."]". mysql_error($this->con);
@@ -184,6 +185,7 @@ class lib_model_mysql {
 				$this->emsg = "";
         $s = vsprintf($s, $values);
         $this->msg = $s;
+l::ll("$s");
         if (!$arow = mysql_query($s, $this->con)) {
 			      $this->emsg = "[".@mysql_errno($this->con)."]". mysql_error($this->con);
             return (bool) false;

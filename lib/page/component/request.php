@@ -34,24 +34,24 @@ class lib_component_request extends lib_component_component {
         if ($this->server['HTTP_HOST'] != null) {
             $sessHost = $this->server['HTTP_HOST'];
         }
-        if ($this->server['HTTP_X_FORWARDED_HOST'] != null) {
-            $sessHost = $this->server['HTTP_X_FORWARDED_HOST'];
+        if (in_array('HTTP_X_FORWARDED_HOST', $_SERVER) && $_SERVER['HTTP_X_FORWARDED_HOST'] != null) {
+            $sessHost = $_SERVER['HTTP_X_FORWARDED_HOST'];
         }
         return trim(preg_replace('/(?:\:.*)/', '', $sessHost));
     }
 
     function remoteip($safe = true) {
-        if (!$safe && $this->server['HTTP_X_FORWARDED_FOR'] != null) {
-            $ipaddr = preg_replace('/(?:,.*)/', '', $this->server['HTTP_X_FORWARDED_FOR']);
+        if (!$safe && $_SERVER['HTTP_X_FORWARDED_FOR'] != null) {
+            $ipaddr = preg_replace('/(?:,.*)/', '', $_SERVER['HTTP_X_FORWARDED_FOR']);
         } else {
-            if ($this->server['HTTP_CLIENT_IP'] != null) {
-                $ipaddr = $this->server['HTTP_CLIENT_IP'];
+            if (in_array('HTTP_CLIENT_IP',$_SERVER) && $_SERVER['HTTP_CLIENT_IP']!= null) {
+                $ipaddr = $_SERVER['HTTP_CLIENT_IP'];
             } else {
-                $ipaddr = $this->server['REMOTE_ADDR'];
+                $ipaddr = $_SERVER['REMOTE_ADDR'];
             }
         }
-        if ($this->server['HTTP_CLIENTADDRESS'] != null) {
-            $tmpipaddr = $this->server['HTTP_CLIENTADDRESS'];
+        if (in_array('HTTP_CLIENTADDRESS', $_SERVER) && $_SERVER['HTTP_CLIENTADDRESS'] != null) {
+            $tmpipaddr = $_SERVER['HTTP_CLIENTADDRESS'];
             if (!empty($tmpipaddr)) {
                 $ipaddr = preg_replace('/(?:,.*)/', '', $tmpipaddr);
             }

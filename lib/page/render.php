@@ -9,7 +9,7 @@ class lib_page_render extends lib_page_page {
 
     function __construct() {
 	parent::__construct();
-	l::ll("lib_page_render::Construct |".$this->pagename."|");
+	l::ll("lib_page_render::Construct [{$this->pagename}]{$_SERVER['REQUEST_URI']}");
     }
 
     function beforerender() {

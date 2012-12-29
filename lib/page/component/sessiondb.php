@@ -56,7 +56,7 @@ class lib_component_sessiondb extends lib_component_component {
     }
 
     function open($save_path, $session_name) {
-        $this->model->connect($this->mysqlfile);
+        $this->model->connect($this->args['mysqlfile']);
         if (!$this->model->ok())
             echo "cannot open session";
         return ($this->model->ok());
@@ -68,8 +68,8 @@ class lib_component_sessiondb extends lib_component_component {
 
     function read($id) {
 	$delta = time()-$this->gc_maxlifetime;
-      $k = $this->model->delete($this->table_name, "(http_host = '%s') and (updated < %d)", array($_SERVER['HTTP_HOST'], $delta));
-      if (false === ($row = $this->model->row("select data from {$this->table_name} where (sessid = '%s')", array($id))))
+      $k = $this->model->delete($this->args['table_name'], "(http_host = '%s') and (updated < %d)", array($_SERVER['HTTP_HOST'], $delta));
+      if (false === ($row = $this->model->row("select data from {$this->args['table_name']} where (sessid = '%s')", array($id))))
 		return '';
 
 	if (empty($row))
@@ -79,21 +79,23 @@ class lib_component_sessiondb extends lib_component_component {
     }
 
     function write($id, $data) {
-        $sql = "select data from {$this->table_name} where (sessid = '%s')";
-        if (false === ($ar = $this->model->row($sql, array($id)))) {
-					echo "session write error 1";
-					return false;
-				}
-        if (empty($ar)) {
-		$r = $this->model->insert ($this->table_name, 
-		array('sessid', 'sessname', 'http_host', 'ipaddr', 'cipaddr', 'data', 'created', 'updated'), 
-		array($id, ini_get('session.name'), $_SERVER['HTTP_HOST'], $_SERVER['REMOTE_ADDR'], $_SERVER['REMOTE_ADDR'], $data, time(), time())
-	);
-	if ($r < 1) {
-		echo "session write error 2";
+	$rca = $this->page->component('request')->server;
+        if (false === ($ar = $this->model->row("select data from {$this->args['table_name']} where (sessid = '%s')", array($id)))) {
+		echo "session write error 1";
 		return false;
 	}
-	return true;
+        if (empty($ar)) {
+		$r = $this->model->insert (
+			$this->args['table_name'],
+			array('sessid', 'sessname', 'http_host', 'ipaddr', 'cipaddr', 'data', 'created', 'updated'), 
+			array($id, ini_get('session.name'), $rca['HTTP_HOST'],
+			$rca['REMOTE_ADDR'], $rca['REMOTE_ADDR'], $data, time(), time())
+		);
+		if ($r < 1) {
+			echo "session write error 2";
+			return false;
+		}
+		return true;
 	}
 		//Session already exists in db, just update some fields
 		$r = $this->model->update ($this->table_name, array('cipaddr', 'data', 'updated'), array($_SERVER['REMOTE_ADDR'], $data, time()), "sessid = '$id'");

@@ -10,10 +10,9 @@ class app_page_app_page extends lib_page_render {
       		'session_name'=>'panel_theitnetwork_co_za',
       		'cookie_lifetime'=>86400,
       		'model'=>'mysql',
-        	'table_name'=>'php_session',
+        	'table_name'=>'ASdfgASe3a',
         	'mysqlfile'=>'app/conf/sessiondb.php'
-        )
-);
+        ));
     }
 
 }
