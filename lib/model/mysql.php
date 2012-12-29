@@ -64,7 +64,7 @@ class lib_model_mysql {
         $this->msg = $sql;
 	l::ll("mysql::executesql [{$sql}]");
         $this->emsg = "";
-        if (!@mysql_query($sql, $this->con)) {
+        if (!mysql_query($sql, $this->con)) {
             $this->emsg = "[".@mysql_errno($this->con)."]". mysql_error($this->con);
             return false;
         }
@@ -117,14 +117,14 @@ class lib_model_mysql {
             $tmp[] = "$col=" . $this->vals[$index];
         $s = "update " . $atablename . " set " . implode(',', $tmp) . " where ($where)";
 				$this->msg = $s;
-				if (!$this->executesql($s))
+				if (!$this->executesql("$s"))
             return -2;
         return mysql_affected_rows($this->con);
     }
 
     public function insert($atablename = '', $afields = array(), $avalues = array()) {
-				if (true !== (bool) $this->insert_update_delete_prepare($afields, $avalues))
-					return -1;
+	if (true !== (bool) $this->insert_update_delete_prepare($afields, $avalues))
+		return -1;
         $s = "insert into $atablename (" . implode(",", $this->cols) . ") values (" .  implode(",", $this->vals) . ")";
         if (!$this->executesql($s))
             return -2;

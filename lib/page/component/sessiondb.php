@@ -98,7 +98,7 @@ class lib_component_sessiondb extends lib_component_component {
 		return true;
 	}
 		//Session already exists in db, just update some fields
-		$r = $this->model->update ($this->table_name, array('cipaddr', 'data', 'updated'), array($_SERVER['REMOTE_ADDR'], $data, time()), "sessid = '$id'");
+		$r = $this->model->update ($this->args['table_name'], array('cipaddr', 'data', 'updated'), array($_SERVER['REMOTE_ADDR'], $data, time()), "sessid = '$id'");
 		if ((int) $r <= 0) {
 			echo "session write error 3";
        return false;
