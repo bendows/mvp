@@ -2,16 +2,18 @@
 
 class lib_component_auth extends lib_component_component {
 
-	var $salt = "asdfastgef g__sZfgI345643tr ..";
+  var $salt = "asdfastgef g__sZfgI345643tr ..";
 
-  function __construct ($data, &$apage) {
-    parent::__construct($data, $apage);
-		$cf = "app_model_{$this->model}";
-		$this->db = new $cf;
-		$this->db->connect();
-	}
+    function initialize() {
+        parent::initialize(func_get_args());
+        $apage = $this->page;
+        $args = $this->args;
+        $modelclassname = "app_model_{$args['model']}";
+        $this->db = & new $modelclassname();
+	$this->db->connect();
+    }
 
-	function user_by_token($email, $token) {
+    function user_by_token($email, $token) {
 
     if (empty($token))
       return false;

@@ -3,14 +3,14 @@
 class object {
 
     function __construct($varnames = array()) {
-				//chassnames is a list of page objects inherrited
+	//chassnames is a list of page objects inherrited
         $classnames[] = $parent_class_name = get_class($this);
         while ($parent_class_name = get_parent_class($parent_class_name))
             if ($parent_class_name !== "object")
                 $classnames[] = $parent_class_name;
-				foreach ($classnames as $classname)
-        $mergedvars = $varnames;
-				//iterate through all classes and merge their mergedvars 
+	foreach ($classnames as $classname)
+        	$mergedvars = $varnames;
+	//iterate through all classes and merge their mergedvars 
         foreach ($classnames as $classname) {
             $classvars = get_class_vars($classname);
             foreach ($varnames as $mergedvar) {
@@ -27,14 +27,14 @@ class object {
         }
         unset($classnames);
         // merge models for page
-				if (isset($mergedvars['models']))
+	if (isset($mergedvars['models']))
         foreach ($mergedvars['models'] as $model => $dummy)
             if (!in_array($model, $this->models))
                 $this->models[] = $model;
         // merge components for page
         //$this->components = $mergedvars['components'];
         // merge helpers for page
-				if (isset($mergedvars['helpers']))
+	if (isset($mergedvars['helpers']))
         foreach ($mergedvars['helpers'] as $helper => $dummy)
             if (!in_array($helper, $this->helpers))
                 $this->helpers[] = $helper;
