@@ -19,9 +19,8 @@ class lib_component_auth extends lib_component_component {
 	if (! isemailmx($email))
 		return false;
 
-    if (false === ($rs = $this->db->row ("select uid from user where status = 1 and token = '$token'")))
+    if (false === ($rs = $this->db->row ("select uid from user where status = 1 and token = '%s'", array($token))))
 		return false;
-
 	return ((string) $rs['uid'] === (string) $email);
 	}
 
@@ -56,13 +55,10 @@ class lib_component_auth extends lib_component_component {
 
 		$apwd = rstring('sasdf');
 
-		$fields = array('status'=>'int','token'=>'str');
-		$values = array('status'=>1, 'token'=>$apwd);
+		$fields = array('status','token');
+		$values = array(1, $apwd);
 
 		if (false === ($rs = $this->db->update ("user", $fields, $values, "uid = '$email'")))
-			return false;
-
-		if ($this->db->fno != 1)
 			return false;
 
 		if ($this->send_forgot_email($email, $apwd))
@@ -82,14 +78,11 @@ class lib_component_auth extends lib_component_component {
     if (false === ($rs = $this->db->insert ("user", $fields, $values)))
       return false;
 
-    $fields = array('euid'=>'str');
-    $values = array('euid'=>md5($this->salt."$rs"));
+    $fields = array('euid');
+    $values = array(md5($this->salt."$rs"));
 
     if (false === ($rs = $this->db->update ("user", $fields, $values, "id = $rs and status = 0")))
       return false;
-
-    if ($this->db->fno != 1)
-	return false;
 
 	if ($this->request_password_reset($email))
     	return true;
@@ -114,15 +107,11 @@ class lib_component_auth extends lib_component_component {
 
 		$pwd = md5($this->salt."$pwd");
 
-		$fields = array('pwd'=>'str','status'=>'int');
-    $values = array('pwd'=>$pwd, 'status'=>3);
+		$fields = array('pwd','status');
+    $values = array($pwd, 3);
 
-		if (false === ($rs = $this->db->update ("user", 
-			$fields, $values, "uid = '$email' and token = '$code' and status = 1")))
+		if (false === ($rs = $this->db->update ("user", $fields, $values, "uid = '$email' and token = '$code' and status = 1")))
 				return false;
-
-    if ($this->db->fno != 1)
-      return false;
 
     return true;
   }

@@ -5,7 +5,7 @@ class app_page_register extends app_page_app_page {
 
   function get() {
 
-        if ($this->component('auth')->isloggedin()) {
+    if ($this->component('auth')->isloggedin()) {
       $this->viewvars['msg'] = "signup";
       $this->viewfile = "logout_first";
     }
