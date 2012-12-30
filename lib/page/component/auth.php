@@ -137,11 +137,12 @@ class lib_component_auth extends lib_component_component {
     if (! isemailmx($email)) { return (boolean) false; }
     if (! ismd5($apwd)) { return (boolean) false; }
 
-		if (false === ($er = $this->db->row("select id, datetimef, typeid, handle, euid, id, pwd from user where (uid = '%s') and (pwd = '%s')", 
-			array($email, $apwd))))
+	if (false === ($er = $this->db->row("select id, updated, typeid, handle, euid, id, pwd from user where (uid = '%s') and (pwd = '%s')", 
+		array($email, $apwd))))
       	return false;
 
     if ((string) $er['pwd'] === (string) $apwd)  {
+      $this->db->update ("user", array('loggedin'), array('NULL'), "uid = '$email'");
       $_SESSION['euid']=$er['euid'];
       $_SESSION['tid']=$er['typeid'];
       $_SESSION['datec']=$er['datetimef'];

@@ -1,5 +1,5 @@
 <?
-class app_page_login extends app_page_app_auth {
+class app_page_login extends app_page_app_page {
 
   var $autorender = true;
   var $viewfile = "login";
