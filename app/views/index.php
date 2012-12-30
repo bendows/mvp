@@ -1,4 +1,6 @@
 <?$this->addscript("<script type='text/javascript' src='/js/jquery/jquery.min.js'></script>");?>
+<?$this->addscript("<script type='text/javascript' src='/js/captcha.js'></script>");?>
+
 <h2> mvp successfully installed on <?=$this->httphost;?></h2>
 <?=$this->element('debug');?>
 <p>

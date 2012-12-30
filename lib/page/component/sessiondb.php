@@ -8,8 +8,7 @@ class lib_component_sessiondb extends lib_component_component {
         parent::initialize(func_get_args());
         $apage = $this->page;
 	$args = $this->args;
-        $modelclassname = "lib_model_{$args['model']}";
-        $this->model = & new $modelclassname();
+        $this->model = $apage->model($args['model']);
         ini_set('allow_url_fopen', 0);
         ini_set('allow_url_include', 0);
         ini_set('session.auto_start', '0');

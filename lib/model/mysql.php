@@ -17,12 +17,13 @@ class lib_model_mysql {
         if (!$mysqlconf)
             return false;
         if (is_scalar($mysqlconf)) {
-            $this->emsg = "$mysqlconf did not exist as a file and was not included";
             if (file_exists("$mysqlconf")) {
+		l::ll("lib_model_mysql::connect including file $mysqlconf");
                 require("$mysqlconf");
-                $this->emsg = "$mysqlconf did exist as a file and was included";
-            } else
+            } else {
+            	l::ll("lib_model_mysql::connect $mysqlconf did not exist as a file and was not included");
                 return false;
+	    }
         }
         if (is_array($mysqlconf))
             $lar = $mysqlconf;
@@ -30,8 +31,9 @@ class lib_model_mysql {
         $this->ffdb = $lar['dbname'];
         $this->ffuid = $lar['dbuser'];
         $this->ffpwd = $lar['dbpwd'];
-        if (!$this->con = @mysql_connect($this->ffhost, $this->ffuid, $this->ffpwd, TRUE)) {
-            $this->emsg = "[".@mysql_errno($this->con)."]". mysql_error($this->con);
+        $this->con = mysql_connect($this->ffhost, $this->ffuid, $this->ffpwd, TRUE);
+        if (!$this->con) {
+            l::ll("lib_model_mysql::connect ".mysql_errno()." ". mysql_error());
             return false;
         }
         if (!$this->selectdb()) {
@@ -39,7 +41,7 @@ class lib_model_mysql {
             return false;
         }
         $this->msg = 'Connected [' . join('', mysql_fetch_row(mysql_query('SELECT NOW(), VERSION();', $this->con))) . "]";
-        return (boolean) true;
+           return (boolean) true;
     }
 
     public function disconnect() {
@@ -84,24 +86,27 @@ class lib_model_mysql {
             return false;
         if (empty($avalues))
             return false;
-				$this->emsg = "";
+	$this->emsg = "";
         foreach ($afields as $i => $fieldname) {
             if (!array_key_exists($i, $avalues))
                 continue;
             $this->cols[] = $fieldname;
             $s = "";
             $s = mysql_real_escape_string($avalues[$i]);
+if ($s == "NULL")
+            $this->vals[] = "$s";
+else
             $this->vals[] = "'$s'";
         }
         return (boolean) true;
     }
 
     final private function insert_update_delete_prepare ($afields=array(), $avalues=array()) {
-				if (!$this->selectdb()) 
+	if (!$this->selectdb()) 
             return (boolean) false;
         if (!$this->setcolsvals((array) $afields, (array) $avalues))
             return (boolean) false;
-				return (bool) true;
+		return (bool) true;
 	  }
 
     public function update($atablename = '', $afields = array(), $avalues = array(), $where = '') {

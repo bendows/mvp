@@ -1,9 +1,5 @@
 <?
 class app_model_sitedb extends lib_model_mysql {
-  function connect() {
-		return parent::connect (settings::get('mysqlconf'));
-  }
-
 	function rows($r) {
 		if (false === ($er = parent::rows("$r")))
 			return array();

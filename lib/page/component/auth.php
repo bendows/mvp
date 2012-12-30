@@ -5,12 +5,10 @@ class lib_component_auth extends lib_component_component {
   var $salt = "asdfastgef g__sZfgI345643tr ..";
 
     function initialize() {
-        parent::initialize(func_get_args());
-        $apage = $this->page;
-        $args = $this->args;
-        $modelclassname = "app_model_{$args['model']}";
-        $this->db = & new $modelclassname();
-	$this->db->connect();
+      parent::initialize(func_get_args());
+      $apage = $this->page;
+      $args = $this->args;
+      $this->db = $apage->model($args['model']);
     }
 
     function user_by_token($email, $token) {
@@ -18,13 +16,13 @@ class lib_component_auth extends lib_component_component {
     if (empty($token))
       return false;
 
-		if (! isemailmx($email))
-			return false;
+	if (! isemailmx($email))
+		return false;
 
     if (false === ($rs = $this->db->row ("select uid from user where status = 1 and token = '$token'")))
-			return false;
+		return false;
 
-		return ((string) $rs['uid'] === (string) $email);
+	return ((string) $rs['uid'] === (string) $email);
 	}
 
 	function send_forgot_email($email, $randomid) {
@@ -77,8 +75,9 @@ class lib_component_auth extends lib_component_component {
     if (! isemailmx($email))
       return false;
 
-    $fields = array('uid'=>'str','status'=>'int', 'euid'=>'str', 'ipaddr'=>'str');
-    $values = array('uid'=>$email, 'status'=>0,'euid'=>$email, 'ipaddr'=>$this->page->component('request')->remoteip());
+    //$fields = array('registered'=>'int', 'uid'=>'str','status'=>'int', 'euid'=>'str', 'ipaddr'=>'str');
+    $fields = array('registered', 'uid','status', 'euid', 'ipaddr');
+    $values = array('NULL', $email, 0,$email, $this->page->component('request')->remoteip());
 
     if (false === ($rs = $this->db->insert ("user", $fields, $values)))
       return false;
@@ -90,12 +89,12 @@ class lib_component_auth extends lib_component_component {
       return false;
 
     if ($this->db->fno != 1)
-			return false;
+	return false;
 
-		if ($this->request_password_reset($email))
+	if ($this->request_password_reset($email))
     	return true;
 
-		return false;
+	return false;
   }
 
 
