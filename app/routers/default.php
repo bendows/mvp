@@ -4,6 +4,9 @@
 
 		public function getpagename () {
 			switch (true) {
+				case preg_match ("%^login.php$%", $this->url):
+					$apage = "app_page_login";
+					break;
 				case preg_match ("%^captcha.php$%", $this->url):
 					$apage = "app_page_captcha";
 					break;
