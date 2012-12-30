@@ -68,7 +68,7 @@ class lib_component_sessiondb extends lib_component_component {
 
     function read($id) {
 	$delta = time()-$this->gc_maxlifetime;
-      $k = $this->model->delete($this->args['table_name'], "(http_host = '%s') and (updated < %d)", array($_SERVER['HTTP_HOST'], $delta));
+      $k = $this->model->delete($this->args['table_name'], "(http_host = '%s') and (updated < %s)", array($_SERVER['HTTP_HOST'], $delta));
       if (false === ($row = $this->model->row("select data from {$this->args['table_name']} where (sessid = '%s')", array($id))))
 		return '';
 
