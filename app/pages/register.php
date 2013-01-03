@@ -20,22 +20,23 @@ class app_page_register extends app_page_app_page {
         }
 
         $p = $this->component('request')->post;
-        $captchacode = trim($_SESSION['captchac']);
-        $captchacodetest = trim($p['captchacode']);
-        $uid = trim($p['uid']);
+	$p['captchac']=$_SESSION['captchac'];
+	$_SESSION['captchac']='';
 
-        $_SESSION['captchac'] = '';
+	$rs = parseinput($p, array('captchacode'=>'str', 'captchac'=>'str', 'uid'=>'emailmx'));
 
-        if ($captchacode != $captchacodetest)
+	if (! is_array($rs)) {
+            $this->viewvars['ermsg'] = "Your request could not be completed<br>";
+	else {
+
+        if ($p['captchacode'] != $p['captchac'])
             return;
 
-        if (! isemail($uid))
-            return;
-
-        if ($this->component("auth")->register_user($uid)) {
+        if ($this->component("auth")->register_user($p['uid'])) {
             $this->viewvars['msg'] = "An Email has been sent to you.<br>Click on the link in the email to reset your password";
             $this->viewfile = "registered_successfully";
         } else
             $this->viewvars['ermsg'] = "Your request could not be completed<br>Try another E-mail address";
-    }
+    	}
+	}
 }?>

@@ -1,5 +1,3 @@
-<?if (! empty($ermsg))
-    echo "<font color=red><b>$ermsg</b></font>";?>
 <form action='<?=$this->here;?>' method='POST'>
 <table>
 <tr>
@@ -12,7 +10,12 @@
 </tr>
 <tr>
  <td align=center><input name='btn' type='submit' value='Login'></td>
-<td><a href="<?=settings::get('requestnewpwdlink');?>">Forgot your password?</a></td>
+<td><a href="/request_password_reset.php">Forgot your password?</a></td>
 </tr>
 </table>
 </form>
+<?
+if (! empty($msg))
+   echo "<font color=green><b>$msg</b></font>";
+if (! empty($ermsg))
+   echo "<font color=red><b>$ermsg</b></font>";?>

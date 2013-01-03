@@ -24,3 +24,4 @@
 </tr>
 </table>
 </form>
+<?=$this->element('msg');?>

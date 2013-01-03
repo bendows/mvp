@@ -1,53 +1,62 @@
 <?
 class app_page_reset_password extends app_page_app_page {
 
-    var $viewfile = "reset_password";
+    var $viewfile = "reset_password_result";
 
     function get() {
+       $g = $this->component('request')->get;
 
-        if (! $this->component("auth")->user_by_token($this->component('request')->get['r'],$this->component('request')->get['e'])) {
-            $this->viewvars['ermsg']="Invalid code or E-mail address<br>
-            Click on the link in your E-mail again,
-            <br> or <a href='/request_password_reset.php'>Generate another password reset request</a>";
-            $this->viewfile = "reset_password_result";
+        $rs = parseinput ($g, array('r'=>'emailmx', 'e'=>'md5'));
+       if (! is_array($rs)) {
+            $this->viewvars['ermsg'] = "Your request could not be completed<br>";
             return;
         }
-        $this->viewvars['email'] = $this->component('request')->get['r'];
-        $this->viewvars['er'] = $this->component('request')->get['e'];
+        if (! $this->component("auth")->user_by_token($g['r'],$g['e'])) {
+            $this->viewvars['ermsg']="This link does not work<br><a href='/request_password_reset.php'>Get a new password reset request</a>";
+            return;
+        }
+        $this->viewfile = "reset_password";
+        $this->viewvars['email'] = $g['r'];
+        $this->viewvars['er'] = $g['e'];
     }
 
     function post() {
 
        $p = $this->component('request')->post;
 
+       $p['captchac']=$_SESSION['captchac'];
+       $_SESSION['captchac']='';
+	$rs = parseinput ($p, array('apwd'=>'emptystr', 'apwd2'=>'emptystr', 'email'=>'emailmx', 'er'=>'md5'));
+        if (! is_array($rs)) {
+            $this->viewvars['ermsg'] = "Your request could not be completed<br>";
+	    return;
+	}
+	
     if (! $this->component("auth")->user_by_token($p['email'],$p['er'])) {
-            $this->viewvars['ermsg'] = "Your request could not be completed.";
-            $this->viewfile = "reset_password_result";
-      return;
+           $this->viewvars['ermsg'] = "Your request could not be completed.";
+      	   return;
         }
 
-    $captchacode = trim($_SESSION['captchac']);
-    $captchacodetest = trim($p['captchacode']);
+       $g = $this->component('request')->get;
 
-        $_SESSION['captchac'] = '';
+        $this->viewfile = "reset_password";
 
-    $this->viewvars['email'] = $p['email'];
-    $this->viewvars['er'] = $p['er'];
+        if (($p['captchacode'] != $p['captchac']) || ($p['apwd'] != $p['apwd2'])) {
+          	$this->viewvars['email'] = $g['r'];
+        	$this->viewvars['er'] = $g['e'];
+            $this->viewvars['ermsg'] = "Maybe the passwords are not the same.<br> You can also click on the blue image<br>";
+	    return;
+	}
 
-        if ($captchacode != $captchacodetest)
-            return;
-
-        if (empty($p['apwd']))
-            return;
-
-        if ($p['apwd'] != $p['apwd2'])
-            return;
-
-    if (! $this->component("auth")->update_password($p['email'], $p['er'], $p['apwd'], $p['apwd2']))
-      return;
-
-    $this->viewfile = "reset_password_result";
+    if ($this->component("auth")->update_password($p['email'], $p['er'], $p['apwd'], $p['apwd2'])) {
+    	$this->viewfile = "login";
+	$this->here = "/login.php";
         $this->viewvars['msg'] = "Your password has been reset.<br>
         You can now <a href='/login.php'>log in</a>&nbsp;using your new password.";
+	return;
+	}
+          	$this->viewvars['email'] = $g['r'];
+        	$this->viewvars['er'] = $g['e'];
+        $this->viewvars['ermsg'] = "Maybe the passwords are not the same.<br> You can also click on the blue image<br>";
     }
 }?>
