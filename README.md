@@ -10,6 +10,8 @@ cd /home/documentroot && install -o apache /dev/null php_error.log
 cd /home/documentroot && install -o apache /dev/null messages.log 
 cd /home/documentroot && chown apache html html/captcha
 
+```
+
 ```sql
 
 CREATE TABLE `session` (
@@ -26,3 +28,4 @@ CREATE TABLE `session` (
   KEY `sessid` (`sessid`),
   KEY `updated` (`updated`)
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8
+```
