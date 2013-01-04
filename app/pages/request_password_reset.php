@@ -11,7 +11,7 @@ class app_page_request_password_reset extends app_page_app_page {
         $rs = parseinput($p, array('captchacode'=>'str', 'captchac'=>'str', 'uid'=>'emailmx'));
 
         if (! is_array($rs))
-            $this->viewvars['ermsg'] = "Your request could not be completed<br>";
+            $this->viewvars['ermsg'] = "Your $rs request could not be completed<br>";
         else {
 
         if ($p['captchacode'] != $p['captchac'])

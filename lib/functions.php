@@ -269,7 +269,7 @@ function isemailmx($email) {
     if (!isemail($email))
         return (bool) false;
     list($name, $domain) = split('@', $email);
-    if (!checkdnsrr($domain, 'MX')) {
+    if (!checkdnsrr("$domain", "MX")) {
         return (bool) false; // No MX record found
     };
     return (bool) true;
