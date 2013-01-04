@@ -105,8 +105,8 @@ class lib_component_sessiondb extends lib_component_component {
 	return true;
     }
 
-    function destroy($id) {
-       $k = $this->model->delete($this->table_name, "sessid = '%s'", array($id));
+    public function destroy($id) {
+       $k = $this->model->delete($this->args['table_name'], "sessid = '%s'", array($id));
 	if ((int) $k > 0)
 	return true;
         return false;

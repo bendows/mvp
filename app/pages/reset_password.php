@@ -55,8 +55,8 @@ class app_page_reset_password extends app_page_app_page {
         You can now <a href='/login.php'>log in</a>&nbsp;using your new password.";
 	return;
 	}
-          	$this->viewvars['email'] = $g['r'];
-        	$this->viewvars['er'] = $g['e'];
+        $this->viewvars['email'] = $g['r'];
+        $this->viewvars['er'] = $g['e'];
         $this->viewvars['ermsg'] = "Maybe the passwords are not the same.<br> You can also click on the blue image<br>";
     }
 }?>
