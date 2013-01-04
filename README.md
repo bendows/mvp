@@ -28,4 +28,26 @@ CREATE TABLE `session` (
   KEY `sessid` (`sessid`),
   KEY `updated` (`updated`)
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8
+
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` varchar(200) NOT NULL,
+  `pwd` varchar(150) NOT NULL,
+  `ipaddr` varchar(30) NOT NULL,
+  `handle` varchar(255) NOT NULL,
+  `typeid` int(10) unsigned NOT NULL,
+  `disabled` tinyint(3) unsigned NOT NULL,
+  `status` tinyint(2) unsigned NOT NULL DEFAULT '0',
+  `pvt1` varchar(255) NOT NULL,
+  `pvt2` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `euid` varchar(255) NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `registered` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `loggedin` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`uid`),
+  UNIQUE KEY `euid` (`euid`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
 ```
