@@ -34,8 +34,11 @@ class lib_page_page extends object {
         if (!in_array($amodelname, $this->models))
             return;
         $classname = "app_model_{$amodelname}";
-        if ($this->objects['models'][$amodelname] instanceof $classname)
-            return $this->objects['models'][$amodelname];
+        if (array_key_exists ($amodelname, $this->objects['models'])) {
+		if ($this->objects['models'][$amodelname] instanceof $classname)
+      			return $this->objects['models'][$amodelname];
+		return;
+	}
         $this->objects['models'][$amodelname] = & new $classname();
         return $this->objects['models'][$amodelname];
     }

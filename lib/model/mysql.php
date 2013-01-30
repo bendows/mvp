@@ -22,44 +22,34 @@ class lib_model_mysql {
                 require("$mysqlconf");
             } else {
             	l::ll("lib_model_mysql::connect $mysqlconf did not exist as a file and was not included");
-                return false;
+              	return false;
 	    }
-        }
-        if (is_array($mysqlconf))
-            $lar = $mysqlconf;
-        $this->ffhost = $lar['dbhost'];
-        $this->ffdb = $lar['dbname'];
-        $this->ffuid = $lar['dbuser'];
-        $this->ffpwd = $lar['dbpwd'];
-        $this->con = mysql_connect($this->ffhost, $this->ffuid, $this->ffpwd, TRUE);
+        } else  {
+        if (! is_array($mysqlconf)) {
+            l::ll("$mysqlconf is not an arry");
+            return false;
+	 }
+        if (empty($mysqlconf)) {
+          	l::ll("$mysqlconf is an array, but empty");
+            return false;
+	    	}
+
+        $lar = $mysqlconf;
+	}
+        $this->con = mysql_connect($lar['dbhost'], $lar['dbuser'], $lar['dbpwd'], TRUE);
         if (!$this->con) {
             l::ll("lib_model_mysql::connect ".mysql_errno()." ". mysql_error());
             return false;
         }
-        if (!$this->selectdb()) {
-            $this->emsg = "[".@mysql_errno($this->con)."]". mysql_error($this->con);
+        if (!mysql_select_db($lar['dbname'], $this->con)) {
+            l::ll("lib_model_mysql::connect ".mysql_errno($this->con)." ". mysql_error($this->con));
             return false;
         }
-        $this->msg = 'Connected [' . join('', mysql_fetch_row(mysql_query('SELECT NOW(), VERSION();', $this->con))) . "]";
-           return (boolean) true;
-    }
-
-    public function disconnect() {
-        
+        return (boolean) true;
     }
 
     final public function ok() {
         return (boolean) (is_array(@mysql_fetch_row(mysql_query('SELECT VERSION();', $this->con))));
-    }
-
-    final public function selectdb() {
-        $this->msg = $this->ffdb;
-        $this->emsg = "";
-        if (!@mysql_select_db($this->ffdb, $this->con)) {
-            $this->emsg = "[".@mysql_errno($this->con)."]". mysql_error($this->con);
-            return false;
-        }
-        return true;
     }
 
     final private function executesql($sql) {
@@ -74,8 +64,8 @@ class lib_model_mysql {
     }
 
     final private function setcolsvals($afields = array(), $avalues = array()) {
-				$this->msg = "setcols";
-				$this->emsg = "setcols error";
+	$this->msg = "setcols";
+	$this->emsg = "setcols error";
         $this->cols = array();
         $this->vals = array();
         if (!is_array($afields))
@@ -93,9 +83,9 @@ class lib_model_mysql {
             $this->cols[] = $fieldname;
             $s = "";
             $s = mysql_real_escape_string($avalues[$i]);
-if ($s == "NULL")
+	if ($s == "NULL")
             $this->vals[] = "$s";
-else
+	else
             $this->vals[] = "'$s'";
         }
         return (boolean) true;
@@ -110,19 +100,19 @@ else
 	  }
 
     public function update($atablename = '', $afields = array(), $avalues = array(), $where = '') {
-				$where = trim($where);
-				if (true !== (bool) $this->insert_update_delete_prepare($afields, $avalues))
-					return -1;
-				if (empty($where)) {
-					$this->emsg = "empty where clause";
-					return -100;
-				}
+	$where = trim($where);
+	if (true !== (bool) $this->insert_update_delete_prepare($afields, $avalues))
+		return -1;
+	if (empty($where)) {
+		$this->emsg = "empty where clause";
+		return -100;
+	}
         $tmp = array();
         foreach ($this->cols as $index => &$col)
             $tmp[] = "$col=" . $this->vals[$index];
         $s = "update " . $atablename . " set " . implode(',', $tmp) . " where ($where)";
-				$this->msg = $s;
-				if (!$this->executesql("$s"))
+	$this->msg = $s;
+	if (!$this->executesql("$s"))
             return -2;
         return mysql_affected_rows($this->con);
     }
@@ -138,18 +128,16 @@ else
     }
 
     public function delete($atablename = '', $where = '', $values=array()) {
-				if (!$this->selectdb())
-            return -1;
-				$this->emsg = "where tablename values or fields mismatch";
-				$where = trim($where);
-				if (empty($where))
-            return -2;
-				$atablename=trim($atablename);	
-				if (empty($atablename))
+	$this->emsg = "where tablename values or fields mismatch";
+	$where = trim($where);
+	if (empty($where))
+          return -2;
+	$atablename=trim($atablename);	
+	if (empty($atablename))
             return -3;
-				if (empty($values))
-						return -4;
-				$this->emsg = "mysql escape error";
+	if (empty($values))
+		return -4;
+	$this->emsg = "mysql escape error";
         foreach ($values as &$value)
             if (false === ($value = mysql_real_escape_string($value)))
                 return false;
@@ -161,38 +149,37 @@ else
     }
 
     public function row($s = '', $values = array()) {
-				$this->msg = "function row";
-				$this->emsg = "";
-				$s = trim($s);
-				if (empty($s)) {
-					$this->emsg = "empty sql string";
-					return (bool) false;
-				}
-				if (empty($values)){
-					$this->emsg = "empty values";
-					return (bool) false;
-				}
+	$this->msg = "function row";
+	$this->emsg = "";
+	$s = trim($s);
+	if (empty($s)) {
+		$this->emsg = "empty sql string";
+		return (bool) false;
+	}
+	if (empty($values)){
+		$this->emsg = "empty values";
+		return (bool) false;
+	}
 
-			/*foreach ($values as &$value) {
+	/*foreach ($values as &$value) {
          if (preg_match("/^([A-Z]|[0-9]|\.|,|\+|\@|\-|\_|~|\.)+$/i", $value))
          continue;
-      return false;
-            }
+      	return false;
+     	}
 		 */
-        if (!$this->selectdb())
-						return (bool) false;
-				$this->emsg = "mysql escape error";
+	return (bool) false;
+	$this->emsg = "mysql escape error";
         foreach ($values as &$value) {
             if (false === ($value = mysql_real_escape_string($value, $this->con))) {
                 return false;
 						}
         }
-				$this->emsg = "";
+	$this->emsg = "";
         $s = vsprintf($s, $values);
         $this->msg = $s;
-l::ll("$s");
+	l::ll("$s");
         if (!$arow = mysql_query($s, $this->con)) {
-			      $this->emsg = "[".@mysql_errno($this->con)."]". mysql_error($this->con);
+	      $this->emsg = "[".@mysql_errno($this->con)."]". mysql_error($this->con);
             return (bool) false;
         }
         if ((int) mysql_num_rows($arow) === 1) {
@@ -200,10 +187,10 @@ l::ll("$s");
             return (array) $er;
         }
         if ((int) mysql_num_rows($arow) > 1) {
-					$this->emsg = "to many rows returned";
+		$this->emsg = "to many rows returned";
         	return (boolean) false;
-				}
-				return array();
+	}
+	return array();
     }
 
     public function rows($s = '', $values = array(), $key = 'id') {

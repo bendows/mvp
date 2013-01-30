@@ -34,12 +34,12 @@ class lib_component_sessiondb extends lib_component_component {
             $this->gc_maxlifetime = 900;
         }
         if (!session_set_save_handler(
-								array(&$this, 'open'), 
-								array(&$this, 'close'), 
-								array(&$this, 'read'), 
-								array(&$this, 'write'), 
-								array(&$this, 'destroy'), 
-								array(&$this, 'gc'))) {
+			array(&$this, 'open'), 
+			array(&$this, 'close'), 
+			array(&$this, 'read'), 
+			array(&$this, 'write'), 
+			array(&$this, 'destroy'), 
+			array(&$this, 'gc'))) {
       	die("Error session_set_save_handler");
         				}
         $tt = $_SERVER['HTTP_USER_AGENT'];
@@ -55,10 +55,7 @@ class lib_component_sessiondb extends lib_component_component {
     }
 
     function open($save_path, $session_name) {
-        $this->model->connect($this->args['mysqlfile']);
-        if (!$this->model->ok())
-            echo "cannot open session";
-        return ($this->model->ok());
+        return true;
     }
 
     function close() {
