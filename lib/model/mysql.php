@@ -53,143 +53,130 @@ class lib_model_mysql {
     }
 
     final private function executesql($sql) {
-        $this->msg = $sql;
-	l::ll("mysql::executesql [{$sql}]");
-        $this->emsg = "";
         if (!mysql_query($sql, $this->con)) {
-            $this->emsg = "[".@mysql_errno($this->con)."]". mysql_error($this->con);
-            return false;
+	    l::ll("lib_model_mysql::executesql [{$sql}] ".mysql_errno($this->con)."]". mysql_error($this->con));
+            return -12;
         }
-        return true;
+        return mysql_affected_rows($this->con);
     }
 
-    final private function setcolsvals($afields = array(), $avalues = array()) {
-	$this->msg = "setcols";
-	$this->emsg = "setcols error";
-        $this->cols = array();
-        $this->vals = array();
-        if (!is_array($afields))
-            return false;
-        if (empty($afields))
-            return false;
-        if (!is_array($avalues))
-            return false;
-        if (empty($avalues))
-            return false;
-	$this->emsg = "";
-        foreach ($afields as $i => $fieldname) {
-            if (!array_key_exists($i, $avalues))
-                continue;
-            $this->cols[] = $fieldname;
-            $s = "";
-            $s = mysql_real_escape_string($avalues[$i]);
-	if ($s == "NULL")
-            $this->vals[] = "$s";
-	else
-            $this->vals[] = "'$s'";
-        }
-        return (boolean) true;
+    final private function setcolsvals($cols = array(), $vals = array()) {
+
+	if (! (is_array($cols) && ! empty($cols))) {
+		l::ll("lib_model_mysql::setcolsvals() cols array empty or not an array");
+		return -4;
+	}
+	if (! (is_array($vals) && ! empty($vals))) {
+		l::ll("lib_model_mysql::setcolsvals() vals array empty or not an array");
+		return -5;
+	}
+
+	$ret = parseinput ($cols, $vals);
+
+	if (!is_array($ret)) {
+	  l::ll("lib_model_mysql::setcolsvals() >> parseinput $ret");
+          return -6;
+	}
+
+        foreach ($ret as $key => &$value) {
+            if (!array_key_exists($key, $cols)) {
+		l::ll("lib_model_mysql::setcolsvals() $key is not a key in cols");
+		return -7;
+	    }
+            if (true != ($value = mysql_real_escape_string($value))) {
+		l::ll("lib_model_mysql::setcolsvals() $value could not be real_escaped for mysql");
+		return -8;
+	    }
+	}
+	return $ret;
     }
+   
+   final private function quotevalues(&$ar) {
+    	foreach ($ar as $i=>&$value) {
+		if ($value == "NULL")
+       $value = "$value";
+		else
+       	$value = "'$value'";
+    	}
+	}
 
     final private function insert_update_delete_prepare ($afields=array(), $avalues=array()) {
-	if (!$this->selectdb()) 
-            return (boolean) false;
         if (!$this->setcolsvals((array) $afields, (array) $avalues))
             return (boolean) false;
 		return (bool) true;
 	  }
 
-    public function update($atablename = '', $afields = array(), $avalues = array(), $where = '') {
+    public function update($atablename = '', $where='', $cols = array(), $vals = array()) {
 	$where = trim($where);
-	if (true !== (bool) $this->insert_update_delete_prepare($afields, $avalues))
-		return -1;
-	if (empty($where)) {
-		$this->emsg = "empty where clause";
-		return -100;
-	}
-        $tmp = array();
-        foreach ($this->cols as $index => &$col)
-            $tmp[] = "$col=" . $this->vals[$index];
+	if (empty($where))
+		return -2;
+	$atablename=trim($atablename);	
+	if (empty($atablename))
+            return -3;
+	$ret = $this->setcolsvals($cols, $vals);
+	if (! (is_array($ret) && ! empty($ret)))
+		return -3;
+
+	$this->quotevalues($ret);
+	$tmp=array();
+        foreach ($ret as $col => &$val)
+            $tmp[] = "$col=" . $val;
         $s = "update " . $atablename . " set " . implode(',', $tmp) . " where ($where)";
-	$this->msg = $s;
-	if (!$this->executesql("$s"))
-            return -2;
-        return mysql_affected_rows($this->con);
+	return $this->executesql($s);
     }
 
-    public function insert($atablename = '', $afields = array(), $avalues = array()) {
-	if (true !== (bool) $this->insert_update_delete_prepare($afields, $avalues))
-		return -1;
-        $s = "insert into $atablename (" . implode(",", $this->cols) . ") values (" .  implode(",", $this->vals) . ")";
-        if (!$this->executesql($s))
-            return -2;
-        $nid = mysql_insert_id($this->con);
-        return (int) $nid;
+    public function insert($atablename = '', $cols = array(), $vals = array()) {
+	$atablename=trim($atablename);	
+	if (empty($atablename))
+            return -3;
+	$ret = $this->setcolsvals($cols, $vals);
+	if (! (is_array($ret) && ! empty($ret)))
+		return false;
+
+	$this->quotevalues($ret);
+        $s = "insert into $atablename (" . implode(",", array_keys($ret)) . ") values (" .  implode(",", array_values($ret)) . ")";
+        return $this->executesql($s);
     }
 
-    public function delete($atablename = '', $where = '', $values=array()) {
-	$this->emsg = "where tablename values or fields mismatch";
+    public function delete($atablename = '', $where = '', $cols=array(), $vals=array()) {
 	$where = trim($where);
 	if (empty($where))
           return -2;
 	$atablename=trim($atablename);	
 	if (empty($atablename))
             return -3;
-	if (empty($values))
-		return -4;
-	$this->emsg = "mysql escape error";
-        foreach ($values as &$value)
-            if (false === ($value = mysql_real_escape_string($value)))
-                return false;
-        $s = "delete from $atablename where ".vsprintf($where, $values);
-        if (!$this->executesql($s))
-            return -5;
-        $r = mysql_affected_rows($this->con);
-        return (int) $r;
+
+	$ret = $this->setcolsvals($cols, $vals);
+
+	if (! (is_array($ret) && ! empty($ret)))
+		return false;
+
+        $s = "delete from $atablename where ".vsprintf($where, array_values($ret));
+
+        return $this->executesql($s);
     }
 
-    public function row($s = '', $values = array()) {
-	$this->msg = "function row";
-	$this->emsg = "";
+    public function row($s = '', $cols=array(), $vals = array()) {
 	$s = trim($s);
-	if (empty($s)) {
-		$this->emsg = "empty sql string";
-		return (bool) false;
-	}
-	if (empty($values)){
-		$this->emsg = "empty values";
-		return (bool) false;
-	}
+	if (empty($s))
+		return array();
+	$ret = $this->setcolsvals($cols, $vals);
+	if (! (is_array($ret) && ! empty($ret)))
+		return array();
 
-	/*foreach ($values as &$value) {
-         if (preg_match("/^([A-Z]|[0-9]|\.|,|\+|\@|\-|\_|~|\.)+$/i", $value))
-         continue;
-      	return false;
-     	}
-		 */
-	return (bool) false;
-	$this->emsg = "mysql escape error";
-        foreach ($values as &$value) {
-            if (false === ($value = mysql_real_escape_string($value, $this->con))) {
-                return false;
-						}
-        }
-	$this->emsg = "";
-        $s = vsprintf($s, $values);
-        $this->msg = $s;
-	l::ll("$s");
+        $s = vsprintf($s, array_values($ret));
+
         if (!$arow = mysql_query($s, $this->con)) {
-	      $this->emsg = "[".@mysql_errno($this->con)."]". mysql_error($this->con);
-            return (bool) false;
+	      l::ll("lib_model_mysql::row() [".@mysql_errno($this->con)."]". mysql_error($this->con));
+	     return array();
         }
+
         if ((int) mysql_num_rows($arow) === 1) {
             $er = (array) mysql_fetch_assoc($arow);
             return (array) $er;
         }
-        if ((int) mysql_num_rows($arow) > 1) {
-		$this->emsg = "to many rows returned";
-        	return (boolean) false;
-	}
+        if ((int) mysql_num_rows($arow) > 1)
+            l::ll("to many rows returned");
 	return array();
     }
 
