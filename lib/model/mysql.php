@@ -100,12 +100,6 @@ class lib_model_mysql {
         }
     }
 
-    final private function insert_update_delete_prepare($afields = array(), $avalues = array()) {
-        if (!$this->setcolsvals((array) $afields, (array) $avalues))
-            return (boolean) false;
-        return (bool) true;
-    }
-
     public function update($atablename = '', $where = '', $cols = array(), $vals = array()) {
         $where = trim($where);
         if (empty($where))
