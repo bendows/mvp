@@ -25,10 +25,11 @@ class l {
         $self = &l::getinstance();
         $self->fp = fopen("{$_SERVER['DOCUMENT_ROOT']}/{$self->logfile}", 'a');
         //$out = print_r($ar, true);
-        fwrite($self->fp, "\n" . date("Y m d H:i") . " [$key]");
+        if (is_array($key))
+            fwrite($self->fp, "\n" . date("Y m d H:i") . "\n".print_r($key, true)."\n");
+        else    
+            fwrite($self->fp, "\n" . date("Y m d H:i") . " [$key]");
         fclose($self->fp);
     }
-
 }
-
 ?>

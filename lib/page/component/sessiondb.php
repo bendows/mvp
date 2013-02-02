@@ -5,6 +5,7 @@ class lib_component_sessiondb extends lib_component_component {
     private $gc_maxlifetime = 0;
 
     function initialize() {
+        l::ll('lib_component_sessiondb::initialize()');
         parent::initialize(func_get_args());
         $apage = $this->page;
         $args = $this->args;
@@ -31,7 +32,7 @@ class lib_component_sessiondb extends lib_component_component {
         // Sessions last for a day unless otherwise specified.
         if (!$this->gc_maxlifetime) {
             die('this is neverland, the impossible');
-            $this->gc_maxlifetime = 900;
+            $this->gc_maxlifetime = 60;
         }
         if (!session_set_save_handler(
                         array(&$this, 'open'), array(&$this, 'close'), array(&$this, 'read'), array(&$this, 'write'), array(&$this, 'destroy'), array(&$this, 'gc'))) {
@@ -50,28 +51,49 @@ class lib_component_sessiondb extends lib_component_component {
     }
 
     function open($save_path, $session_name) {
+        l::ll('lib_component_sessiondb::open()');
         return true;
     }
 
     function close() {
+        l::ll('lib_component_sessiondb::close()');
         return true;
     }
 
     function read($id) {
-        $delta = time() - $this->gc_maxlifetime;
-        $k = $this->model->delete($this->args['table_name'], "(http_host = '%s') and (updated < %s)", array('http_host' => $_SERVER['HTTP_HOST'], 'updated' => $delta), array('http_host' => 'str', 'updated' => 'int'));
+        l::ll('lib_component_sessiondb::read()');
+        $k = $this->model->delete(
+                $this->args['table_name'], "(http_host = '%s') and (unix_timestamp(now())-updated > %s)", array(
+            'http_host' => $_SERVER['HTTP_HOST'],
+            'delta' => $this->gc_maxlifetime), array('http_host' => 'str', 'delta' => 'int'));
         if ($k < 0)
             return '';
+        if ($k == 0)
+            l::ll('lib_component_sessiondb::read delete returned zero :)');
+        
         $row = $this->model->row("select data from {$this->args['table_name']} where (sessid = '%s')", array('sessid' => $id), array('sessid' => 'str'));
-
+        
+        if (! $row)
+            return '';
+        
         if (empty($row))
             return '';
+
+        l::ll('lib_component_sessiondb::read foundie :)');
         return $row['data'];
     }
 
     function write($id, $data) {
+        l::ll('lib_component_sessiondb::write()');
         $rca = $this->page->component('request')->server;
-        $ar = $this->model->row("select data from {$this->args['table_name']} where (sessid = '%s')", array('sessid' => $id), array('sessid' => 'str'));
+        $ar = $this->model->row("select data from {$this->args['table_name']} where (sessid = '%s')", 
+                array('sessid' => $id), 
+                array('sessid' => 'str')
+        );
+        
+        if (! is_array($ar))
+            return false;
+        
         if (empty($ar)) {
             $r = $this->model->insert($this->args['table_name'], array('sessid' => $id,
                 'sessname' => ini_get('session.name'),
@@ -95,7 +117,7 @@ class lib_component_sessiondb extends lib_component_component {
               $rca['REMOTE_ADDR'], $rca['REMOTE_ADDR'], $data, time(), time())
              */
             if ($r < 1) {
-                echo "session write error 2";
+                l::ll("session write error");
                 return false;
             }
             return true;
@@ -112,7 +134,7 @@ class lib_component_sessiondb extends lib_component_component {
             'updated' => 'int'
                 ));
         if ((int) $r < 0) {
-            echo "session write error 3";
+            l::ll("session write error");
             return false;
         }
         return true;

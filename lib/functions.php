@@ -163,6 +163,16 @@ function istext(&$v2) {
 
 function isstr(&$v2) {
     //if (! preg_match("%^[&A-Z'\"0-9@\ _\(\)\+\-\./\,]+$%i", $v2)){ return false; }
+    if (empty($v2))
+        return false;
+    return true;
+}
+
+function isemptystr(&$v2) {
+    return true;
+}
+function ishtml(&$v2) {
+    //if (! preg_match("%^[&A-Z'\"0-9@\ _\(\)\+\-\./\,]+$%i", $v2)){ return false; }
     $v2 = htmlspecialchars($v2, ENT_QUOTES, 'UTF-8');
     if (empty($v2))
         return false;
@@ -170,7 +180,7 @@ function isstr(&$v2) {
     return true;
 }
 
-function isemptystr(&$v2) {
+function isemptyhtml(&$v2) {
     $v2 = htmlspecialchars($v2, ENT_QUOTES, 'UTF-8');
     $v2 = preg_replace("%/%", "&#x2F;", $v2);
     return true;
@@ -291,6 +301,9 @@ function parseinput($src = array(), $dst = array()) {
     if (empty($dst)) {
         return (string) "dst is empty";
     }
+
+l::ll($src);
+l::ll($dst);
 
     $ar = array();
     $errors = "";

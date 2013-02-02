@@ -15,7 +15,7 @@ class app_page_app_page extends lib_page_render {
       $this->component("sessiondb", 
 	array(
      	'session_name'=>'panel_theitnetwork_co_za',
-    	'cookie_lifetime'=>3600,
+    	'cookie_lifetime'=>60,
      	'model'=>'sessiondb',
        	'table_name'=>'ASdfgASe3a',
       ));

@@ -24,28 +24,28 @@ class lib_model_mysql {
 
         if (!(is_array($cols) && !empty($cols))) {
             l::ll("lib_model_mysql::setcolsvals() cols array empty or not an array");
-            return -4;
+            return false;
         }
         if (!(is_array($vals) && !empty($vals))) {
             l::ll("lib_model_mysql::setcolsvals() vals array empty or not an array");
-            return -5;
+            return false;
         }
 
         $ret = parseinput($cols, $vals);
 
         if (!is_array($ret)) {
             l::ll("lib_model_mysql::setcolsvals() >> parseinput $ret");
-            return -6;
+            return false;
         }
 
         foreach ($ret as $key => &$value) {
             if (!array_key_exists($key, $cols)) {
                 l::ll("lib_model_mysql::setcolsvals() $key is not a key in cols");
-                return -7;
+                return false;
             }
             if (true != ($value = mysql_real_escape_string($value))) {
                 l::ll("lib_model_mysql::setcolsvals() $value could not be real_escaped for mysql");
-                return -8;
+                return false;
             }
         }
         return $ret;
@@ -73,7 +73,6 @@ class lib_model_mysql {
                 l::ll("$mysqlconf is an array, but empty");
                 return false;
             }
-
             $lar = $mysqlconf;
         }
         $this->con = mysql_connect($lar['dbhost'], $lar['dbuser'], $lar['dbpwd'], TRUE);
@@ -91,85 +90,111 @@ class lib_model_mysql {
     final private function executesql($sql, $last_inserted_id = false) {
         if (!mysql_query($sql, $this->con)) {
             l::ll("lib_model_mysql::executesql [{$sql}] " . mysql_errno($this->con) . "]" . mysql_error($this->con));
-            return false;
+            return -1;
         }
-        if (!$last_inserted_id)
-            return mysql_affected_rows($this->con);
-        return (mysql_insert_id($this->con));
+        if (!$last_inserted_id) {
+            $a = mysql_affected_rows($this->con);
+            l::ll("lib_model_mysql::executesql() update success [$sql] returning[$a]");
+            return $a;
+        }
+        $a = mysql_insert_id($this->con);
+        if (!$a) {
+            l::ll("lib_model_mysql::executesql() insert but nothing? [$sql] [$a] returning -1");
+            return -1;
+        }
+        l::ll("lib_model_mysql::executesql() insert success [$sql] returning[$a]");
+        return $a;
+    }
+
+    public function insert($atablename = '', $cols = array(), $vals = array()) {
+        l::ll("lib_model_mysql::insert        BEGIN");
+        $atablename = trim($atablename);
+        if (empty($atablename))
+            return -1;
+        $ret = $this->setcolsvals($cols, $vals);
+        if (!(is_array($ret) && !empty($ret)))
+            return -1;
+
+        $this->quotevalues($ret);
+        $s = "insert into $atablename (" . implode(",", array_keys($ret)) . ") values (" . implode(",", array_values($ret)) . ")";
+        $kk = $this->executesql($s, true);
+        l::ll("lib_model_mysql::insert:: $s [$kk]");
+        return ($kk);
     }
 
     public function update($atablename = '', $where = '', $cols = array(), $vals = array()) {
+        l::ll("lib_model_mysql::update        BEGIN");
         $where = trim($where);
         if (empty($where))
-            return -2;
+            return -1;
         $atablename = trim($atablename);
         if (empty($atablename))
-            return -3;
+            return -1;
         $ret = $this->setcolsvals($cols, $vals);
         if (!(is_array($ret) && !empty($ret)))
-            return -3;
-
+            return -1;
         $this->quotevalues($ret);
         $tmp = array();
         foreach ($ret as $col => &$val)
             $tmp[] = "$col=" . $val;
         $s = "update " . $atablename . " set " . implode(',', $tmp) . " where ($where)";
-        return $this->executesql($s);
-    }
-
-    public function insert($atablename = '', $cols = array(), $vals = array()) {
-        $atablename = trim($atablename);
-        if (empty($atablename))
-            return -3;
-        $ret = $this->setcolsvals($cols, $vals);
-        if (!(is_array($ret) && !empty($ret)))
-            return false;
-
-        $this->quotevalues($ret);
-        $s = "insert into $atablename (" . implode(",", array_keys($ret)) . ") values (" . implode(",", array_values($ret)) . ")";
-        return $this->executesql($s);
+        $kk = $this->executesql($s);
+        l::ll("lib_model_mysql::update $s [$kk]");
+        return ($kk);
     }
 
     public function delete($atablename = '', $where = '', $cols = array(), $vals = array()) {
+        l::ll("lib_model_mysql::delete        BEGIN");
         $where = trim($where);
         if (empty($where))
-            return -2;
+            return -1;
         $atablename = trim($atablename);
         if (empty($atablename))
-            return -3;
-
+            return -1;
         $ret = $this->setcolsvals($cols, $vals);
-
         if (!(is_array($ret) && !empty($ret)))
-            return false;
-
+            return -1;
         $s = "delete from $atablename where " . vsprintf($where, array_values($ret));
-
-        return $this->executesql($s);
+        $kk = $this->executesql($s);
+        l::ll("lib_model_mysql::delete $s [$kk]");
+        return $kk;
     }
 
     public function row($s = '', $cols = array(), $vals = array()) {
+        l::ll("lib_model_mysql::row        BEGIN");
         $s = trim($s);
-        if (empty($s))
-            return array();
+        if (empty($s)) {
+            l::ll("lib_model_mysql::row() query is empty");
+            return false;
+        }
         $ret = $this->setcolsvals($cols, $vals);
-        if (!(is_array($ret) && !empty($ret)))
-            return array();
+        if (!(is_array($ret) && !empty($ret))) {
+            l::ll("lib_model_mysql::row() [no an array or an array but also empty");
+            return false;
+        }
 
         $s = vsprintf($s, array_values($ret));
 
-        if (!$arow = mysql_query($s, $this->con)) {
-            l::ll("lib_model_mysql::row() [" . @mysql_errno($this->con) . "]" . mysql_error($this->con));
+        l::ll("lib_model_mysql::row() [$s]");
+
+        if (!$result = mysql_query($s, $this->con)) {
+            l::ll("lib_model_mysql::row() [" . mysql_errno($this->con) . "]" . mysql_error($this->con));
+            return false;
+        }
+        
+        if (! $row = mysql_fetch_assoc($result)) {
+            l::ll("lib_model_mysql::row() [$s] no rows found");
             return array();
         }
+        
+        l::ll($row);
 
-        if ((int) mysql_num_rows($arow) === 1) {
-            $er = (array) mysql_fetch_assoc($arow);
-            return (array) $er;
+        if (count($row) >1) {
+            l::ll("lib_model_mysql::row() too many rows found");
+            return false;
         }
-        if ((int) mysql_num_rows($arow) > 1)
-            l::ll("to many rows returned");
-        return array();
+         return (array) $row;
+
     }
 
     public function rows($s = '', $values = array(), $key = 'id') {
