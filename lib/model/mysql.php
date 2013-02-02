@@ -11,6 +11,46 @@ class lib_model_mysql {
     private $vals = array();
     private $con = false;
 
+    final private function quotevalues(&$ar) {
+        foreach ($ar as $i => &$value) {
+            if ($value == "NULL")
+                $value = "$value";
+            else
+                $value = "'$value'";
+        }
+    }
+
+    final private function setcolsvals($cols = array(), $vals = array()) {
+
+        if (!(is_array($cols) && !empty($cols))) {
+            l::ll("lib_model_mysql::setcolsvals() cols array empty or not an array");
+            return -4;
+        }
+        if (!(is_array($vals) && !empty($vals))) {
+            l::ll("lib_model_mysql::setcolsvals() vals array empty or not an array");
+            return -5;
+        }
+
+        $ret = parseinput($cols, $vals);
+
+        if (!is_array($ret)) {
+            l::ll("lib_model_mysql::setcolsvals() >> parseinput $ret");
+            return -6;
+        }
+
+        foreach ($ret as $key => &$value) {
+            if (!array_key_exists($key, $cols)) {
+                l::ll("lib_model_mysql::setcolsvals() $key is not a key in cols");
+                return -7;
+            }
+            if (true != ($value = mysql_real_escape_string($value))) {
+                l::ll("lib_model_mysql::setcolsvals() $value could not be real_escaped for mysql");
+                return -8;
+            }
+        }
+        return $ret;
+    }
+
     public function connect($mysqlconf = false) {
         $this->msg = "";
         $this->emsg = "nothing done to mysql";
@@ -48,56 +88,14 @@ class lib_model_mysql {
         return (boolean) true;
     }
 
-    final public function ok() {
-        return (boolean) (is_array(@mysql_fetch_row(mysql_query('SELECT VERSION();', $this->con))));
-    }
-
-    final private function executesql($sql) {
+    final private function executesql($sql, $last_inserted_id = false) {
         if (!mysql_query($sql, $this->con)) {
             l::ll("lib_model_mysql::executesql [{$sql}] " . mysql_errno($this->con) . "]" . mysql_error($this->con));
-            return -12;
+            return false;
         }
-        return mysql_affected_rows($this->con);
-    }
-
-    final private function setcolsvals($cols = array(), $vals = array()) {
-
-        if (!(is_array($cols) && !empty($cols))) {
-            l::ll("lib_model_mysql::setcolsvals() cols array empty or not an array");
-            return -4;
-        }
-        if (!(is_array($vals) && !empty($vals))) {
-            l::ll("lib_model_mysql::setcolsvals() vals array empty or not an array");
-            return -5;
-        }
-
-        $ret = parseinput($cols, $vals);
-
-        if (!is_array($ret)) {
-            l::ll("lib_model_mysql::setcolsvals() >> parseinput $ret");
-            return -6;
-        }
-
-        foreach ($ret as $key => &$value) {
-            if (!array_key_exists($key, $cols)) {
-                l::ll("lib_model_mysql::setcolsvals() $key is not a key in cols");
-                return -7;
-            }
-            if (true != ($value = mysql_real_escape_string($value))) {
-                l::ll("lib_model_mysql::setcolsvals() $value could not be real_escaped for mysql");
-                return -8;
-            }
-        }
-        return $ret;
-    }
-
-    final private function quotevalues(&$ar) {
-        foreach ($ar as $i => &$value) {
-            if ($value == "NULL")
-                $value = "$value";
-            else
-                $value = "'$value'";
-        }
+        if (!$last_inserted_id)
+            return mysql_affected_rows($this->con);
+        return (mysql_insert_id($this->con));
     }
 
     public function update($atablename = '', $where = '', $cols = array(), $vals = array()) {
