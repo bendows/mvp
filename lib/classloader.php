@@ -2,7 +2,7 @@
 
 function __autoload($classname) {
 
-				$c = $classname;
+    $c = $classname;
     switch (true) {
         case preg_match("%^l$%", $classname):
             $classname = "lib/l";
@@ -67,9 +67,9 @@ function __autoload($classname) {
     $filename = "{$classname}.php";
 
     if (!file_exists("$filename"))
-			error_log(__FILE__."::".__FUNCTION__." file[$filename] not a file class[$c]");
-		else
-    	require_once($filename);
+        error_log(__FILE__ . "::" . __FUNCTION__ . " file[$filename] not a file class[$c]");
+    else
+        require_once($filename);
 }
 
 ?>

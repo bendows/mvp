@@ -7,4 +7,5 @@ class lib_component_response extends lib_component_component {
     }
 
 }
+
 ?>

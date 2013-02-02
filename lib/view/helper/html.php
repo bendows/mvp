@@ -38,4 +38,5 @@ class lib_helper_html extends object {
     }
 
 }
+
 ?>

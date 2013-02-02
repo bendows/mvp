@@ -13,7 +13,7 @@ class dispatcher {
     }
 
     public static function make_page() {
-       $page = new self::$_pagename;
+        $page = new self::$_pagename;
         // more injection...
         return $page;
     }

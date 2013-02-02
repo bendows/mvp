@@ -9,15 +9,15 @@ class lib_view {
     var $autolayout = true;
     var $hasrendered = false;
     var $output = false;
-		//These variables carry over from the page into the view
+    //These variables carry over from the page into the view
     var $pagevars = array('pagename', 'httphost', 'title', 'remoteip', 'here', 'referer', 'viewvars', 'viewfile', 'layout');
-		//Hold CSS and js scripts to include
+    //Hold CSS and js scripts to include
     var $scripts = array();
 
     function __construct(&$page) {
         if (!is_object($page))
-            error_log ("Page[$page] is not a page object");
-				$this->pagename = get_class($page);
+            error_log("Page[$page] is not a page object");
+        $this->pagename = get_class($page);
         //Suck in some variables from the page object
         foreach ($this->pagevars as $var)
             if (isset($page->{$var}))
@@ -60,11 +60,10 @@ class lib_view {
 
     function _renderlayout($layoutfilename = null, $content) {
         $data = array_merge(
-					$this->viewvars, 
-					array(
-          	'content' => $content,
-          	'headers' => implode("\t\r\n", $this->scripts)
-          )
+                $this->viewvars, array(
+            'content' => $content,
+            'headers' => implode("\t\r\n", $this->scripts)
+                )
         );
         return $this->_render($layoutfilename, $data);
     }
@@ -85,4 +84,6 @@ class lib_view {
         return $element;
     }
 
-}?>
+}
+
+?>

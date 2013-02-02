@@ -142,6 +142,7 @@ function isfloat($v2) {
     }
     return false;
 }
+
 function isdirname($v2) {
     if (preg_match("%^[A-Z0-9_\(\)\+\-\.,]+$%i", $v2)) {
         return true;
@@ -1799,23 +1800,24 @@ function buttons($colcount, $array) {
     function display_products_images_list(&$site, $products = array(), $images = array(), $version) {
         ?>
         <table border=0>
-    <? foreach ($products as $key => &$aproduct) { ?>
+            <? foreach ($products as $key => &$aproduct) { ?>
                 <tr>
                     <td valign=top align=left>
-        <? if (array_key_exists($aproduct['imageid'], $images)) { ?>
+                        <? if (array_key_exists($aproduct['imageid'], $images)) { ?>
                             <img src='<?= '/' . IPATH . '/' . $images[$aproduct['imageid']]['path'] . "/$version/" . $images[$aproduct['imageid']]['filename']; ?>'>
-        <?
-        } else {
-            echo "&nbsp;";
-        }
-        ?>
+                            <?
+                        } else {
+                            echo "&nbsp;";
+                        }
+                        ?>
                     </td>
                     <td align=left valign=top>
                         <table border=0>
                             <tr>
-        <? $did = $site->pages->pbyid[$aproduct['pageid']]['directoryid'];
-        $pp = replacespaces($aproduct['name']);
-        ?>
+                                <?
+                                $did = $site->pages->pbyid[$aproduct['pageid']]['directoryid'];
+                                $pp = replacespaces($aproduct['name']);
+                                ?>
                                 <td><b><a style='font-size:15px; text-decoration:underline;' 
                                           href='http://<?= $_SERVER['HTTP_HOST'] . $site->dirs->path($did) . "$pp'>$pp</a></b>&nbsp;"; ?></td>
                                           </tr>
@@ -1824,112 +1826,112 @@ function buttons($colcount, $array) {
                                           </td>
                                           <td valign=top align=right><b><font color=black size=4>R&nbsp;<?= $aproduct['price']; ?></font></b></td>
                                           </tr>
-    <? } ?>
+                                      <? } ?>
                                       </table>
-<?
-}
+                                      <?
+                                  }
 
-function buttonsdiv($colcount, $array) {
-    $i = 0;
-    foreach ($array as $key => $page) {
-        if ($i == 0) {
-            echo "<div style='position:relative; clear: both border:1px solid blue;'>";
-        } else {
-            if ($i % $colcount == 0) {
-                echo "</div><div>ben";
-            }
-        }
-        ?>
-        <?
-        echo "<div style='position: relative; float: left; background-color: pink; border:2px solid red;'>" . $page['name'] . "</div>";
-        $i++;
-    }
-    echo "</div>";
-}
+                                  function buttonsdiv($colcount, $array) {
+                                      $i = 0;
+                                      foreach ($array as $key => $page) {
+                                          if ($i == 0) {
+                                              echo "<div style='position:relative; clear: both border:1px solid blue;'>";
+                                          } else {
+                                              if ($i % $colcount == 0) {
+                                                  echo "</div><div>ben";
+                                              }
+                                          }
+                                          ?>
+                                          <?
+                                          echo "<div style='position: relative; float: left; background-color: pink; border:2px solid red;'>" . $page['name'] . "</div>";
+                                          $i++;
+                                      }
+                                      echo "</div>";
+                                  }
 
-function display_products_images_divgrid(&$site, $colcount, $products = array(), $images = array(), $version) {
-    if (!is_array($products))
-        return;
-    if (empty($products))
-        return;
-    $i = 0;
+                                  function display_products_images_divgrid(&$site, $colcount, $products = array(), $images = array(), $version) {
+                                      if (!is_array($products))
+                                          return;
+                                      if (empty($products))
+                                          return;
+                                      $i = 0;
 
-    foreach ($products as $key => $product) {
-        if ($i == 0) {
-            ?>
+                                      foreach ($products as $key => $product) {
+                                          if ($i == 0) {
+                                              ?>
                                               <div style='padding:10px; border=0px solid yellow;' align="center">
                                               <div style='border:1px solid red;padding:0px;'>
-        <?
-        } else {
-            if ($i % $colcount == 0)
-                echo "</div>";
-            //echo "</tr><tr><td style='border-bottom:1px solid lightgray;font-size:4px;' colspan=$colcount>&nbsp;</td></tr><tr><td colspan=$colcount>&nbsp;</td><tr>";
-        }
+                                                    <?
+                                                } else {
+                                                    if ($i % $colcount == 0)
+                                                        echo "</div>";
+                                                    //echo "</tr><tr><td style='border-bottom:1px solid lightgray;font-size:4px;' colspan=$colcount>&nbsp;</td></tr><tr><td colspan=$colcount>&nbsp;</td><tr>";
+                                                }
 
-        $style = '';
-        if ((int) $product['imageid'] > 0)
-            if (array_key_exists($product['imageid'], $images)) {
-                echo "<div style='position: relative; float: left; width: 240px; height: 150px; background-color: pink;'>";
-                echo "<table cellpadding=0 border=0 cellspacing=0>";
-                echo "<tr><td>";
-                echo "<img onclick=\"alert (getimgsize('img" . $product['imageid'] . "'));\" id='img" . $product['imageid'] . "' src='/" . IPATH . "/" . $images[$product['imageid']]['path'] . "/$version/" . $images[$product['imageid']]['filename'] . "'></td></tr>";
-                echo "<tr><td><div style='width:160px;'><b><a href=#>" . $product['name'] . "</a><br>R&nbsp;" . $product['price'] . "</b></div></td></tr>";
-                echo "</table></div>";
-            } else {
-                echo "<td><img style='padding:1px; border:0px solid #021a40;' onclick=\"document.getElementById('checker$checkboxname$key').checked=(! document.getElementById('checker$checkboxname$key').checked);\" src='" . IPATH . "/" . $page['path'] . "/$version/" . $page['filename'] . "'></td>";
-            }
-        //echo "<label for='checker$checkboxname$key'><img src='".$page['path']."/".$page['filename']."'></label></td>";
-        $i++;
-    }
-    $emptytds = $colcount - (int) ($i % $colcount);
-    if ((int) ($i % $colcount) > 0) {
-        echo "<td colspan=$emptytds>&nbsp;&nbsp;</td>";
-    }
-    echo "</tr>";
-}
+                                                $style = '';
+                                                if ((int) $product['imageid'] > 0)
+                                                    if (array_key_exists($product['imageid'], $images)) {
+                                                        echo "<div style='position: relative; float: left; width: 240px; height: 150px; background-color: pink;'>";
+                                                        echo "<table cellpadding=0 border=0 cellspacing=0>";
+                                                        echo "<tr><td>";
+                                                        echo "<img onclick=\"alert (getimgsize('img" . $product['imageid'] . "'));\" id='img" . $product['imageid'] . "' src='/" . IPATH . "/" . $images[$product['imageid']]['path'] . "/$version/" . $images[$product['imageid']]['filename'] . "'></td></tr>";
+                                                        echo "<tr><td><div style='width:160px;'><b><a href=#>" . $product['name'] . "</a><br>R&nbsp;" . $product['price'] . "</b></div></td></tr>";
+                                                        echo "</table></div>";
+                                                    } else {
+                                                        echo "<td><img style='padding:1px; border:0px solid #021a40;' onclick=\"document.getElementById('checker$checkboxname$key').checked=(! document.getElementById('checker$checkboxname$key').checked);\" src='" . IPATH . "/" . $page['path'] . "/$version/" . $page['filename'] . "'></td>";
+                                                    }
+                                                //echo "<label for='checker$checkboxname$key'><img src='".$page['path']."/".$page['filename']."'></label></td>";
+                                                $i++;
+                                            }
+                                            $emptytds = $colcount - (int) ($i % $colcount);
+                                            if ((int) ($i % $colcount) > 0) {
+                                                echo "<td colspan=$emptytds>&nbsp;&nbsp;</td>";
+                                            }
+                                            echo "</tr>";
+                                        }
 
-function display_products_images_grid(&$site, $colcount, $products = array(), $images = array(), $version) {
-    if (!is_array($products))
-        return;
-    if (empty($products))
-        return;
-    $i = 0;
-    echo "<table border=0>";
-    foreach ($products as $key => $product) {
-        if ($i == 0) {
-            echo "<tr>";
-        } else {
-            if ($i % $colcount == 0)
-                echo "</tr><tr><td style='border-bottom:2px solid lightgray;' colspan=$colcount>&nbsp;</td></tr>";
-        }
-        $did = $site->pages->pbyid[$product['pageid']]['directoryid'];
-        $style = '';
-        if ((int) $product['imageid'] > 0)
-            if (array_key_exists($product['imageid'], $images)) {
-                echo "<td valign=top>";
-                echo "<table cellpadding=0 border=0 cellspacing=0>";
-                echo "<tr><td>";
-                ?>
+                                        function display_products_images_grid(&$site, $colcount, $products = array(), $images = array(), $version) {
+                                            if (!is_array($products))
+                                                return;
+                                            if (empty($products))
+                                                return;
+                                            $i = 0;
+                                            echo "<table border=0>";
+                                            foreach ($products as $key => $product) {
+                                                if ($i == 0) {
+                                                    echo "<tr>";
+                                                } else {
+                                                    if ($i % $colcount == 0)
+                                                        echo "</tr><tr><td style='border-bottom:2px solid lightgray;' colspan=$colcount>&nbsp;</td></tr>";
+                                                }
+                                                $did = $site->pages->pbyid[$product['pageid']]['directoryid'];
+                                                $style = '';
+                                                if ((int) $product['imageid'] > 0)
+                                                    if (array_key_exists($product['imageid'], $images)) {
+                                                        echo "<td valign=top>";
+                                                        echo "<table cellpadding=0 border=0 cellspacing=0>";
+                                                        echo "<tr><td>";
+                                                        ?>
                                                         <a href='http://<?= $_SERVER['HTTP_HOST'] . $site->dirs->path($did); ?>'><?=
-                "<img onclick=\"alert (getimgsize('img" . $product['imageid'] . "'));\" id='img" . $product['imageid'] . "' src='/" . IPATH . "/" . $images[$product['imageid']]['path'] . "/$version/" . $images[$product['imageid']]['filename'] . "'></a></td></tr>";
-                echo "<tr><td><div style='width:160px; margin:0; padding:0;'><b><a href=# style='margin:0; padding:0;'>" . $product['name'] . "</a><br>R&nbsp;" . $product['price'] . "</b></div></td></tr>";
-                echo "</table></td>";
-            } else {
-                echo "<td><img style='padding:1px; border:0px solid #021a40;' onclick=\"document.getElementById('checker$checkboxname$key').checked=(! document.getElementById('checker$checkboxname$key').checked);\" src='" . IPATH . "/" . $page['path'] . "/$version/" . $page['filename'] . "'></td>";
-            }
-        //echo "<label for='checker$checkboxname$key'><img src='".$page['path']."/".$page['filename']."'></label></td>";
-        $i++;
-    }
-    $emptytds = $colcount - (int) ($i % $colcount);
-    if ((int) ($i % $colcount) > 0) {
-        echo "<td colspan=$emptytds>&nbsp;&nbsp;</td>";
-    }
-    echo "</tr>";
-    echo "</table>";
-}
+                                        "<img onclick=\"alert (getimgsize('img" . $product['imageid'] . "'));\" id='img" . $product['imageid'] . "' src='/" . IPATH . "/" . $images[$product['imageid']]['path'] . "/$version/" . $images[$product['imageid']]['filename'] . "'></a></td></tr>";
+                                        echo "<tr><td><div style='width:160px; margin:0; padding:0;'><b><a href=# style='margin:0; padding:0;'>" . $product['name'] . "</a><br>R&nbsp;" . $product['price'] . "</b></div></td></tr>";
+                                        echo "</table></td>";
+                                    } else {
+                                        echo "<td><img style='padding:1px; border:0px solid #021a40;' onclick=\"document.getElementById('checker$checkboxname$key').checked=(! document.getElementById('checker$checkboxname$key').checked);\" src='" . IPATH . "/" . $page['path'] . "/$version/" . $page['filename'] . "'></td>";
+                                    }
+                                //echo "<label for='checker$checkboxname$key'><img src='".$page['path']."/".$page['filename']."'></label></td>";
+                                $i++;
+                            }
+                            $emptytds = $colcount - (int) ($i % $colcount);
+                            if ((int) ($i % $colcount) > 0) {
+                                echo "<td colspan=$emptytds>&nbsp;&nbsp;</td>";
+                            }
+                            echo "</tr>";
+                            echo "</table>";
+                        }
 
-function display_product_images($aproduct = array(), $aimages = array()) {
-    ?>
+                        function display_product_images($aproduct = array(), $aimages = array()) {
+                                            ?>
                                                 <table border=0 cellspacing=7>
                                                     <tr>
                                                         <td valign=top align=left>
@@ -1943,29 +1945,31 @@ function display_product_images($aproduct = array(), $aimages = array()) {
                                                         </td>
                                                     </tr>
                                                 </table>
-<?
-}
+                                                <?
+                                            }
 
-function checkboxeswithoutkey($array, $colcount, $idfield, $displayfield, $checkboxname, $selectedcid) {
-    $i = 0;
-    echo "<table border=0 cellspacing=10>";
-    foreach ($array as $page) {
-        if ($i == 0) {
-            echo "<tr>";
-        } else {
-            if ($i % $colcount == 0) {
-                echo "</tr><tr>";
-            }
-        }
-        //if ($page[$idfield] == $selectedcid) {
-        echo "<td><input type = 'checkbox' name = '$checkboxname' value='" . $page[$idfield] . "'>" .
-        $page[$displayfield] . "</td>";
-        $i++;
-    }
-    $emptytds = $colcount - (int) ($i % $colcount);
-    if ((int) ($i % $colcount) > 0) {
-        echo "<td colspan=$emptytds>&nbsp;&nbsp;</td>";
-    }
-    echo "</tr>";
-    echo "</table>";
-}
+                                            function checkboxeswithoutkey($array, $colcount, $idfield, $displayfield, $checkboxname, $selectedcid) {
+                                                $i = 0;
+                                                echo "<table border=0 cellspacing=10>";
+                                                foreach ($array as $page) {
+                                                    if ($i == 0) {
+                                                        echo "<tr>";
+                                                    } else {
+                                                        if ($i % $colcount == 0) {
+                                                            echo "</tr><tr>";
+                                                        }
+                                                    }
+                                                    //if ($page[$idfield] == $selectedcid) {
+                                                    echo "<td><input type = 'checkbox' name = '$checkboxname' value='" . $page[$idfield] . "'>" .
+                                                    $page[$displayfield] . "</td>";
+                                                    $i++;
+                                                }
+                                                $emptytds = $colcount - (int) ($i % $colcount);
+                                                if ((int) ($i % $colcount) > 0) {
+                                                    echo "<td colspan=$emptytds>&nbsp;&nbsp;</td>";
+                                                }
+                                                echo "</tr>";
+                                                echo "</table>";
+                                            }
+
+                                            

@@ -1,8 +1,8 @@
 <?
 
-ini_set("log_errors" , "1");
-ini_set("error_log" , "php_error.log");
-ini_set("display_errors" , "0");
+ini_set("log_errors", "1");
+ini_set("error_log", "php_error.log");
+ini_set("display_errors", "0");
 ini_set('date.timezone', 'Africa/Johannesburg');
 
 require_once('lib/functions.php');
@@ -17,7 +17,7 @@ else
     dispatcher::$_url = $_SERVER['REQUEST_URI'];
 
 if (dispatcher::$_url == "/")
-	dispatcher::$_url = "/index.html";
+    dispatcher::$_url = "/index.html";
 
 $arouter = dispatcher::make_router();
 
@@ -30,8 +30,7 @@ $apage = dispatcher::make_page();
 $apage->initialize();
 
 if ($apage->autorender)
-	$apage->render($apage->layout, $apage->viewfile);
+    $apage->render($apage->layout, $apage->viewfile);
 
 $apage->shutdown();
-
 ?>
