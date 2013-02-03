@@ -52,7 +52,7 @@ class app_page_reset_password extends app_page_app_page {
     	$this->viewfile = "login";
 	$this->here = "/login.php";
         $this->viewvars['msg'] = "Your password has been reset.<br>
-        You can now <a href='/login.php'>log in</a>&nbsp;using your new password.";
+        You can now log in with your new password.";
 	return;
 	}
         $this->viewvars['email'] = $g['r'];

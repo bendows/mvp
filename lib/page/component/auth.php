@@ -19,9 +19,10 @@ class lib_component_auth extends lib_component_component {
         if (!isemailmx($email))
             return false;
 
-        if (false === ($rs = $this->db->row("select uid from user where status = 1 and token = '%s'", array($token))))
-            return false;
+        $rs = $this->db->row("select uid from user where status = 1 and token = '%s'", array('token'=>$token), array("token"=>"md5"));
+	if (is_array($rs) && ! empty($rs))
         return ((string) $rs['uid'] === (string) $email);
+	return false;
     }
 
     function send_forgot_email($email, $randomid) {
@@ -52,14 +53,14 @@ class lib_component_auth extends lib_component_component {
         if (!isemailmx($email))
             return false;
 
-        $apwd = rstring('sasdf');
+        $apwd = rstring('sasdf'.time());
 
-        $fields = array('status', 'token');
-        $values = array(1, $apwd);
-
-        if (false === ($rs = $this->db->update("user", $fields, $values, "uid = '$email'")))
-            return false;
-
+        $inputvalues = array('status'=>1, 'token'=>$apwd);
+        $types = array('status'=>'int', 'token'=>'str');
+	l::ll("lib_page_component_auth::request_password_reset()");
+        $rs = $this->db->update("user", "uid = '$email'", $inputvalues, $types);
+	if ($rs != 1)
+		return false;
         if ($this->send_forgot_email($email, $apwd))
             return true;
         return false;
@@ -71,10 +72,10 @@ class lib_component_auth extends lib_component_component {
             return false;
 
         //$fields = array('registered'=>'int', 'uid'=>'str','status'=>'int', 'euid'=>'str', 'ipaddr'=>'str');
-        $fields = array('registered', 'uid', 'status', 'euid', 'ipaddr');
-        $values = array('NULL', $email, 0, $email, $this->page->component('request')->remoteip());
+        $fields = array('registered'=>'str', 'uid'=>'emailmx', 'status'=>'zint', 'euid'=>'emailmx', 'ipaddr'=>'ipaddr');
+        $values = array('registered'=>'NULL', 'uid'=>$email, 'status'=>0, 'euid'=>$email, 'ipaddr'=>$this->page->component('request')->remoteip());
 
-        if (false === ($rs = $this->db->insert("user", $fields, $values)))
+        if (0 >= ($rs = $this->db->insert("user", $fields, $values)))
             return false;
 
         $fields = array('euid');

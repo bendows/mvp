@@ -11,9 +11,8 @@ class app_page_request_password_reset extends app_page_app_page {
         $rs = parseinput($p, array('captchacode'=>'str', 'captchac'=>'str', 'uid'=>'emailmx'));
 
         if (! is_array($rs))
-            $this->viewvars['ermsg'] = "Your request could not be completed<br>";
+            $this->viewvars['ermsg'] = "Your requesti could not be completed<br>";
         else {
-
         if ($p['captchacode'] != $p['captchac'])
             return;
 
@@ -21,8 +20,7 @@ class app_page_request_password_reset extends app_page_app_page {
             $this->viewfile = "request_password_reset_result";
             $this->viewvars['msg'] = "An email with a password reset link was sent to {$p['uid']}<br>".
           "When the message arrives, click the link in it to continue.";
-        } else
-            $this->viewvars['ermsg'] = "No action taken";
+        }
 	}
     }
 

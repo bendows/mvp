@@ -244,10 +244,7 @@ function isipaddr($v2) {
 }
 
 function ismd5($v2) {
-    if (preg_match('#^[0-9a-f]{32}$#i', $v2)) {
-        return true;
-    }
-    return false;
+	return !empty($v2) && preg_match('/^[a-f0-9]{32}$/', $v2);
 }
 
 function isurl($n) {
@@ -289,21 +286,22 @@ function isemailmx($email) {
 function parseinput($src = array(), $dst = array()) {
 
     if (!is_array($src)) {
+        l::ll("parseinput() src not an array");
         return (string) "src not an array";
     }
     if (!is_array($dst)) {
+        l::ll("parseinput() dst not an array");
         return (string) "dst not an array";
     }
 
     if (empty($src)) {
+        l::ll("parseinput() src is empty");
         return (string) "src is empty";
     }
     if (empty($dst)) {
+        l::ll("parseinput() dst is empty");
         return (string) "dst is empty";
     }
-
-l::ll($src);
-l::ll($dst);
 
     $ar = array();
     $errors = "";
@@ -576,8 +574,10 @@ l::ll($dst);
         }
     }
 
-    if (!empty($errors))
+    if (!empty($errors)) {
+	l::ll("parseinput() [$errors]");
         return (string) "$errors";
+}
 
     return (array) $ar;
 }

@@ -19,7 +19,7 @@ class app_page_login extends app_page_app_page {
         $p = $this->component('request')->post;
         $rs = parseinput ($p, array('uid'=>'email', 'apwd'=>'str'));
         if (! is_array($rs)) {
-            $this->viewvars['ermsg'] = 'Could not log you in';
+            $this->viewvars['ermsg'] = 'Could not logi you in';
             return;
         }
 

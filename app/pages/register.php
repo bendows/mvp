@@ -27,7 +27,7 @@ class app_page_register extends app_page_app_page {
 
 	if (! is_array($rs)) {
             $this->viewvars['ermsg'] = "Your request could not be completed<br>";
-	else {
+	} else {
 
         if ($p['captchacode'] != $p['captchac'])
             return;
