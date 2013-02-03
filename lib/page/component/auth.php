@@ -5,6 +5,7 @@ class lib_component_auth extends lib_component_component {
     var $salt = "asdfastgef g__sZfgI345643tr ..";
 
     function initialize() {
+        l::ll(__METHOD__);
         parent::initialize(func_get_args());
         $apage = $this->page;
         $args = $this->args;
@@ -12,7 +13,7 @@ class lib_component_auth extends lib_component_component {
     }
 
     function user_by_token($email, $token) {
-
+        l::ll(__METHOD__);
         if (empty($token))
             return false;
 
@@ -26,7 +27,7 @@ class lib_component_auth extends lib_component_component {
     }
 
     function send_forgot_email($email, $randomid) {
-
+        l::ll(__METHOD__);
         $msg = array();
         $msg[] = "<br>";
         $msg[] = "<b><font face='verdana' color=black>You have successfully generated a password reset request for your account at " .
@@ -49,15 +50,14 @@ class lib_component_auth extends lib_component_component {
     }
 
     function request_password_reset($email) {
-
+        l::ll(__METHOD__);
         if (!isemailmx($email))
             return false;
 
         $apwd = rstring('sasdf'.time());
 
         $inputvalues = array('status'=>1, 'token'=>$apwd);
-        $types = array('status'=>'int', 'token'=>'str');
-	l::ll("lib_page_component_auth::request_password_reset()");
+        $types = array('status'=>'int', 'token'=>'md5');
         $rs = $this->db->update("user", "uid = '$email'", $inputvalues, $types);
 	if ($rs != 1)
 		return false;
@@ -67,7 +67,7 @@ class lib_component_auth extends lib_component_component {
     }
 
     function register_user($email) {
-
+        l::ll(__METHOD__);
         if (!isemailmx($email))
             return false;
 
@@ -91,11 +91,11 @@ class lib_component_auth extends lib_component_component {
     }
 
     function update_password($email, $code, $pwd, $pwd2) {
-
+        l::ll(__METHOD__);
         if (!isemailmx($email))
             return false;
 
-        if (!isuid($code))
+        if (!ismd5($code))
             return false;
 
         if (empty($pwd))
@@ -106,19 +106,21 @@ class lib_component_auth extends lib_component_component {
 
         $pwd = md5($this->salt . "$pwd");
 
-        $fields = array('pwd', 'status');
-        $values = array($pwd, 3);
+        $values = array('pwd'=>$pwd, 'status'=>3);
+        $types = array('pwd'=>str, 'status'=>int);
 
-        if (false === ($rs = $this->db->update("user", $fields, $values, "uid = '$email' and token = '$code' and status = 1")))
+        if (1 != ($rs = $this->db->update("user", "uid = '$email' and token = '$code' and status = 1", $values, $types)))
             return false;
 
         return true;
     }
 
     function isloggedin() {
+        l::ll(__METHOD__);
         if (!ismd5($_SESSION['euid']))
             return (boolean) false;
-        if (false === ($er = $this->db->row("select 1 from user where (euid = '%s')", array($_SESSION['euid'])))) {
+        $er = $this->db->row("select 1 from user where (euid = '%s')", array('iid'=>$_SESSION['euid']), array('iid'=>'md5'));
+	if (! (is_array($er) && ! empty($er))) {
             $this->logout();
             return (bool) false;
         }
@@ -126,11 +128,12 @@ class lib_component_auth extends lib_component_component {
     }
 
     function logout() {
+        l::ll(__METHOD__);
         session_destroy();
     }
 
     function authenticate($email, $apwd) {
-
+        l::ll(__METHOD__);
         $apwd = md5($this->salt . "$apwd");
 
         if (!isemailmx($email)) {
@@ -140,15 +143,18 @@ class lib_component_auth extends lib_component_component {
             return (boolean) false;
         }
 
-        if (false === ($er = $this->db->row("select id, updated, typeid, handle, euid, id, pwd from user where (uid = '%s') and (pwd = '%s')", array($email, $apwd))))
+        $er = $this->db->row("select id, uid, updated, typeid, handle, euid, id, pwd from user where (uid = '%s') and (pwd = '%s')", 
+array('email'=>$email, 'pwd'=>$apwd), array('email'=>'email', 'pwd'=>'md5'));
+	if (! (is_array($er) && ! empty($er)))
             return false;
 
         if ((string) $er['pwd'] === (string) $apwd) {
-            $this->db->update("user", array('loggedin'), array('NULL'), "uid = '$email'");
+            $this->db->update("user", "uid = '$email'", array('loggedin'=>'NULL'), array('loggedin'=>'str'));
             $_SESSION['euid'] = $er['euid'];
             $_SESSION['tid'] = $er['typeid'];
             $_SESSION['datec'] = $er['datetimef'];
             $_SESSION['handle'] = $er['handle'];
+		l::ll(__METHOD__." ".$er['uid']." logged in");
             return (boolean) true;
         }
         return (boolean) false;

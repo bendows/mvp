@@ -1,4 +1,4 @@
-<form method="post" action="<?=$this->here;?>">
+<form method="post" action="<?=$this->here."?r=$email&e=$er";?>">
 <input type='hidden' value='<?=$email;?>' name='email'>
 <input type='hidden' value='<?=$er;?>' name='er'>
 <table>

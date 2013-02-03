@@ -23,9 +23,8 @@ class app_page_login extends app_page_app_page {
             return;
         }
 
-        $uid = $p['uid'];
-        $pwd = $p['apwd'];
-
+        $uid = $rs['uid'];
+        $pwd = $rs['apwd'];
         if ($this->component('auth')->authenticate($uid, $pwd))
             header ('Location: index.php');
         else

@@ -26,9 +26,9 @@ class l {
         $self->fp = fopen("{$_SERVER['DOCUMENT_ROOT']}/{$self->logfile}", 'a');
         //$out = print_r($ar, true);
         if (is_array($key))
-            fwrite($self->fp, "\n" . date("Y m d H:i") . "\n".print_r($key, true)."\n");
+            fwrite($self->fp, "\n" . date("Y m d H:i s") . "\n".print_r($key, true)."\n");
         else    
-            fwrite($self->fp, "\n" . date("Y m d H:i") . " [$key]");
+            fwrite($self->fp, "\n" . date("Y m d H:i s") . " [$key]");
         fclose($self->fp);
     }
 }

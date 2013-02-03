@@ -5,7 +5,7 @@ class lib_component_sessiondb extends lib_component_component {
     private $gc_maxlifetime = 0;
 
     function initialize() {
-        l::ll('lib_component_sessiondb::initialize()');
+        l::ll(__METHOD__);
         parent::initialize(func_get_args());
         $apage = $this->page;
         $args = $this->args;
@@ -51,48 +51,50 @@ class lib_component_sessiondb extends lib_component_component {
     }
 
     function open($save_path, $session_name) {
-        l::ll('lib_component_sessiondb::open()');
+        l::ll(__METHOD__);
         return true;
     }
 
     function close() {
-        l::ll('lib_component_sessiondb::close()');
+        l::ll(__METHOD__);
         return true;
     }
 
     function read($id) {
-        l::ll('lib_component_sessiondb::read()');
+        l::ll(__METHOD__);
         $k = $this->model->delete(
                 $this->args['table_name'], "(http_host = '%s') and (unix_timestamp(now())-updated > %s)", array(
             'http_host' => $_SERVER['HTTP_HOST'],
             'delta' => $this->gc_maxlifetime), array('http_host' => 'str', 'delta' => 'int'));
-        if ($k < 0)
+        if ($k < 0) {
+            l::ll(__METHOD__." session read error");
             return '';
-        if ($k == 0)
-            l::ll('lib_component_sessiondb::read delete returned zero :)');
-        
+        }
         $row = $this->model->row("select data from {$this->args['table_name']} where (sessid = '%s')", array('sessid' => $id), array('sessid' => 'str'));
         
-        if (! $row)
+        if (! is_array($row)) {
+            l::ll(__METHOD__." session write error");
             return '';
-        
+        }
         if (empty($row))
             return '';
 
-        l::ll('lib_component_sessiondb::read foundie :)');
+        l::ll($row);
         return $row['data'];
     }
 
     function write($id, $data) {
-        l::ll('lib_component_sessiondb::write()');
+        l::ll(__METHOD__);
         $rca = $this->page->component('request')->server;
         $ar = $this->model->row("select data from {$this->args['table_name']} where (sessid = '%s')", 
                 array('sessid' => $id), 
                 array('sessid' => 'str')
         );
         
-        if (! is_array($ar))
-            return false;
+        if (! is_array($ar)) {
+                l::ll(__METHOD__." session write error");
+                return false;
+        }
         
         if (empty($ar)) {
             $r = $this->model->insert($this->args['table_name'], array('sessid' => $id,
@@ -117,7 +119,7 @@ class lib_component_sessiondb extends lib_component_component {
               $rca['REMOTE_ADDR'], $rca['REMOTE_ADDR'], $data, time(), time())
              */
             if ($r < 1) {
-                l::ll("session write error");
+                l::ll(__METHOD__." session write error");
                 return false;
             }
             return true;
@@ -125,7 +127,7 @@ class lib_component_sessiondb extends lib_component_component {
         //Session already exists in db, just update some fields
         $r = $this->model->update($this->args['table_name'], "sessid = '$id'",
 //array('cipaddr', 'data', 'updated'), array($_SERVER['REMOTE_ADDR'], $data, time()), "sessid = '$id'");
-                array(
+            array(
             'cipaddr' => $rca['REMOTE_ADDR'],
             'data' => $data,
             'updated' => time()), array(
@@ -133,7 +135,7 @@ class lib_component_sessiondb extends lib_component_component {
             'data' => 'str',
             'updated' => 'int'
                 ));
-        if ((int) $r < 0) {
+        if ((int) $r !== 1) {
             l::ll("session write error");
             return false;
         }
@@ -141,13 +143,15 @@ class lib_component_sessiondb extends lib_component_component {
     }
 
     public function destroy($id) {
-        $k = $this->model->delete($this->args['table_name'], "sessid = '%s'", array($id));
+        l::ll(__METHOD__);
+        $k = $this->model->delete($this->args['table_name'], "sessid = '%s'", array('id'=>$id), array('id'=>'str'));
         if ((int) $k > 0)
             return true;
         return false;
     }
 
     function gc($maxlifetime) {
+        l::ll(__METHOD__);
         return true;
     }
 
