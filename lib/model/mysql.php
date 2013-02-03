@@ -187,6 +187,8 @@ class lib_model_mysql {
         if (! $row = mysql_fetch_assoc($result)) {
             return array();
         }
+
+        l::ll(__METHOD__." found rows:[".count(array($row))."]");
         
         if (count(array($row)) >1) {
             l::ll(__METHOD__." [$s} too many rows found");
