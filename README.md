@@ -13,7 +13,7 @@ cd /home/documentroot && chown apache html html/captcha
 
 cat <<EOF> app/conf/sessiondb.php
 <?
-$lar=array (
+\$lar=array (
   'dbhost'=>"db-host-or-ip[:port]",
   'dbname'=>"dbname",
   'dbuser'=>"dbuser",
@@ -23,7 +23,7 @@ EOF
 
 cat <<EOF> app/conf/sitedb.php
 <?
-$lar=array (
+\$lar=array (
   'dbhost'=>"db-host-or-ip[:port]",
   'dbname'=>"dbname",
   'dbuser'=>"dbuser",
