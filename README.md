@@ -30,6 +30,9 @@ cat <<EOF> app/conf/sitedb.php
   'dbpwd'=>"dbpassword"
 ); ?>
 EOF
+
+vim app/pages/app_page.php
+
 ```
 
 ```sql
