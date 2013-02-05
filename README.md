@@ -11,6 +11,25 @@ cd /home/documentroot && install -o apache /dev/null messages.log
 cd /home/documentroot && mkdir html html/captcha
 cd /home/documentroot && chown apache html html/captcha
 
+cat <<EOF> app/conf/sessiondb.php
+<?
+$lar=array (
+  'dbhost'=>"db-host-or-ip[:port]",
+  'dbname'=>"dbname",
+  'dbuser'=>"dbuser",
+  'dbpwd'=>"dbpassword"
+); ?>
+EOF
+
+cat <<EOF> app/conf/sitedb.php
+<?
+$lar=array (
+  'dbhost'=>"db-host-or-ip[:port]",
+  'dbname'=>"dbname",
+  'dbuser'=>"dbuser",
+  'dbpwd'=>"dbpassword"
+); ?>
+EOF
 ```
 
 ```sql
